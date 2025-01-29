@@ -6,7 +6,7 @@ import com.xuannam.fashion_shop.dto.resquest.LoginRequest;
 import com.xuannam.fashion_shop.entity.User;
 import com.xuannam.fashion_shop.exception.UserException;
 import com.xuannam.fashion_shop.repository.UserRepository;
-import com.xuannam.fashion_shop.service.CustomerUserServiceImplementation;
+import com.xuannam.fashion_shop.service.impl.CustomerUserServiceImpl;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -32,7 +32,7 @@ public class AuthController {
     UserRepository userRepository;
     JwtProvider jwtProvider;
     PasswordEncoder passwordEncoder;
-    CustomerUserServiceImplementation customerUserServiceImplementation;
+    CustomerUserServiceImpl customerUserServiceImplementation;
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> createUserHandler(@RequestBody User user) throws UserException {

@@ -1,4 +1,4 @@
-package com.xuannam.fashion_shop.service;
+package com.xuannam.fashion_shop.service.impl;
 
 import com.xuannam.fashion_shop.entity.User;
 import com.xuannam.fashion_shop.repository.UserRepository;
@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 /*UserDetailsService là interface mặc định của Spring Security, được dùng để
 * tải thông tin người dùng dựa trên username*/
-public class CustomerUserServiceImplementation implements UserDetailsService {
+public class CustomerUserServiceImpl implements UserDetailsService {
     UserRepository userRepository;
 
     @Override
