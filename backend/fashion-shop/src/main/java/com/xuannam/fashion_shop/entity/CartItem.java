@@ -15,14 +15,14 @@ import lombok.experimental.FieldDefaults;
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @JsonIgnore
     @ManyToOne
-    private Cart cart;
+    Cart cart;
 
     @ManyToOne
-    private Product product;
+    Product product;
     String size;
     int quantity;
     Integer price;
