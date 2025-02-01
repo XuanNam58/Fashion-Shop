@@ -23,10 +23,10 @@ public class Product {
     Long id;
 
     @Column(name = "title")
-    String title;
+    java.lang.String title;
 
     @Column(name = "description")
-    String description;
+    java.lang.String description;
 
     @Column(name = "price")
     int price;
@@ -41,10 +41,10 @@ public class Product {
     int quantity;
 
     @Column(name = "brand")
-    String brand;
+    java.lang.String brand;
 
     @Column(name = "color")
-    String color;
+    java.lang.String color;
 
     @Embedded
     @ElementCollection
@@ -52,7 +52,7 @@ public class Product {
     Set<Size> sizes = new HashSet<>();
 
     @Column(name = "image_url")
-    String imageUrl;
+    java.lang.String imageUrl;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Rating> ratings = new ArrayList<>();

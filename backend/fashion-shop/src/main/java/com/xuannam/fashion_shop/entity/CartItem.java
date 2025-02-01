@@ -23,7 +23,7 @@ public class CartItem {
 
     @ManyToOne
     Product product;
-    String size;
+    Size size;
     int quantity;
     Integer price;
     Integer discountedPrice;

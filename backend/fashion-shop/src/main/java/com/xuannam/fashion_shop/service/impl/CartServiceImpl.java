@@ -36,7 +36,13 @@ public class CartServiceImpl implements CartService {
         CartItem isPresent = cartItemService.isCartItemExist(cart, product, request.getSize(), userId);
 
         if (isPresent == null) {
-            CartItem item = CartItem.builder().product(product).cart(cart).quantity(request.getQuantity()).price(request.getQuantity() * product.getDiscountedPrice()).size(request.getSize()).userId(userId).build();
+            CartItem item = CartItem.builder()
+                    .product(product).cart(cart)
+                    .quantity(request.getQuantity())
+                    .price(request.getQuantity() * product.getDiscountedPrice())
+                    .size(request.getSize())
+                    .userId(userId)
+                    .build();
             CartItem createdCartItem = cartItemService.createCartItem(item);
             cart.getCartItems().add(createdCartItem);
         }

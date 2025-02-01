@@ -21,15 +21,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
-    String firstName;
-    String lastName;
-    String password;
-    String email;
-    String role;
-    String mobile;
+    Size firstName;
+    Size lastName;
+    Size password;
+    Size email;
+    Size role;
+    Size mobile;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     List<Address> addresses = new ArrayList<>();
-    private String payment_information;
+    private Size payment_information;
 
     @Embedded
     @ElementCollection

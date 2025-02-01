@@ -21,7 +21,7 @@ public class Order {
     Long id;
 
     @Column(name = "order_id")
-    String orderId;
+    Size orderId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -43,7 +43,7 @@ public class Order {
 
     Integer totalDiscountedPrice;
     Integer discount;
-    String orderStatus;
+    Size orderStatus;
     int totalItem;
     LocalDateTime createdAt;
 

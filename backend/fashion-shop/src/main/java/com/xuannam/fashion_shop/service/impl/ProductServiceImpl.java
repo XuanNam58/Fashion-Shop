@@ -83,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public String deleteProduct(Long productId) throws ProductException {
+    public java.lang.String deleteProduct(Long productId) throws ProductException {
         Product product = findProductById(productId);
         product.getSizes().clear();
         productRepository.delete(product);
@@ -110,12 +110,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findProductByCategory(String category) {
+    public List<Product> findProductByCategory(java.lang.String category) {
         return null;
     }
 
     @Override
-    public Page<Product> getAllProduct(String category, List<String> colors, List<Size> sizes, Integer minPrice, Integer maxPrice, Integer minDiscount, String sort, String stock, Integer pageNumber, Integer pageSize) {
+    public Page<Product> getAllProduct(java.lang.String category, List<java.lang.String> colors, List<String> sizes, Integer minPrice, Integer maxPrice, Integer minDiscount, java.lang.String sort, java.lang.String stock, Integer pageNumber, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         List<Product> products = productRepository.filterProducts(category, minPrice, maxPrice, minDiscount, sort);
         /*filter sẽ giữ lại các phần tử thỏa mãn điều kiện

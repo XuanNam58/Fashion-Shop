@@ -1,4 +1,4 @@
-package com.xuannam.fashion_shop.entity;
+package com.xuannam.fashion_shop.dto.resquest;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Size {
-    String name;
-    int quantity;
+public class ReviewRequest {
+    Long productId;
+    String review;
 }

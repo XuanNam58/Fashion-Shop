@@ -1,6 +1,5 @@
 package com.xuannam.fashion_shop.entity;
 
-import jakarta.persistence.Entity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,12 +10,12 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PaymentDetails {
-    String paymentMethod;
-    String status;
-    String paymentId;
-    String razorPaymentLinkId;
-    String razorPaymentLinkReferenceId;
-    String razorPaymentLinkStatus;
-    String razorPaymentId;
+    Size paymentMethod;
+    Size status;
+    Size paymentId;
+    Size razorPaymentLinkId;
+    Size razorPaymentLinkReferenceId;
+    Size razorPaymentLinkStatus;
+    Size razorPaymentId;
 
 }

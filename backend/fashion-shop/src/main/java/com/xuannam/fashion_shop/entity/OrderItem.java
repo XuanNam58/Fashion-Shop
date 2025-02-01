@@ -26,7 +26,7 @@ public class OrderItem {
     @ManyToOne
     private Product product;
 
-    String size;
+    Size size;
     int quantity;
     Integer price;
     Integer discountedPrice;

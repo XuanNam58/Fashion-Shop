@@ -18,28 +18,28 @@ public class Address {
     Long id;
 
     @Column(name = "first_name")
-    String firstName;
+    Size firstName;
 
     @Column(name = "last_name")
-    String lastName;
+    Size lastName;
 
     @Column(name = "street_address")
-    String streetAddress;
+    Size streetAddress;
 
     @Column(name = "city")
-    String city;
+    Size city;
 
     @Column(name = "state")
-    String state;
+    Size state;
 
     @Column(name = "zip_code")
-    String zipCode;
+    Size zipCode;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
     User user;
 
-    String mobile;
+    Size mobile;
 
 }

@@ -23,7 +23,6 @@ public class OrderServiceImpl implements OrderService {
     CartService cartItemService;
     ProductService productService;
 
-
     @Override
     public Order createOrder(User user, Address shippingAddress) {
 

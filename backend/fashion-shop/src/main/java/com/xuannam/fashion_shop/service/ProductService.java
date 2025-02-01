@@ -11,14 +11,14 @@ import java.util.List;
 public interface ProductService {
     Product createProduct(CreateProductRequest request);
 
-    String deleteProduct(Long productId) throws ProductException;
+    java.lang.String deleteProduct(Long productId) throws ProductException;
 
     Product updateProduct(Long productId, Product request) throws ProductException;
 
     Product findProductById(Long productId) throws ProductException;
 
-    List<Product> findProductByCategory(String category);
+    List<Product> findProductByCategory(java.lang.String category);
 
-    Page<Product> getAllProduct(String category, List<String> colors, List<Size> sizes, Integer minPrice, Integer maxPrice,
-                                Integer minDiscount, String sort, String stock, Integer pageNumber, Integer pageSize);
+    Page<Product> getAllProduct(java.lang.String category, List<String> colors, List<String> sizes, Integer minPrice, Integer maxPrice,
+                                Integer minDiscount, java.lang.String sort, java.lang.String stock, Integer pageNumber, Integer pageSize);
 }

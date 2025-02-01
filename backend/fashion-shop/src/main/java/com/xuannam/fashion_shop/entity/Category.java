@@ -2,7 +2,6 @@ package com.xuannam.fashion_shop.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -19,8 +18,8 @@ public class Category {
     private Long id;
 
     @NotNull
-    @Size(max = 50)
-    private String name;
+    @jakarta.validation.constraints.Size(max = 50)
+    private Size name;
 
     @ManyToOne
     @JoinColumn(name = "parent_category_id")
