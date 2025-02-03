@@ -15,13 +15,14 @@ import java.util.List;
 @Setter
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
     @Column(name = "order_id")
-    Size orderId;
+    String orderId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -43,7 +44,7 @@ public class Order {
 
     Integer totalDiscountedPrice;
     Integer discount;
-    Size orderStatus;
+    String orderStatus;
     int totalItem;
     LocalDateTime createdAt;
 

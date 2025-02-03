@@ -19,12 +19,12 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
     User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "cart_items")
+    @Column(name = "cart_items")
     Set<CartItem> cartItems = new HashSet<>();
 
     @Column(name = "total_price")

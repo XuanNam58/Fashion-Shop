@@ -14,12 +14,12 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PaymentInformation {
     @Column(name = "cardholder_name")
-    Size cardHolderName;
+    String cardHolderName;
     @Column(name = "card_number")
-    Size cardNumber;
+    String cardNumber;
     @Column(name = "expiration_date")
     LocalDate expirationDate;
     @Column(name = "cvv")
-    Size cvv;
+    String cvv;
 
 }

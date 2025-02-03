@@ -17,16 +17,16 @@ import java.time.LocalDateTime;
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @ManyToOne
     @JsonIgnore
-    private Order order;
+    Order order;
 
     @ManyToOne
-    private Product product;
+    Product product;
 
-    Size size;
+    String size;
     int quantity;
     Integer price;
     Integer discountedPrice;

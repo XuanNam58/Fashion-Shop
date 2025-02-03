@@ -14,17 +14,17 @@ import java.util.Set;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateProductRequest {
-    java.lang.String title;
-    java.lang.String description;
+    String title;
+    String description;
     int price;
     int discountedPrice;
     int discountPercent;
     int quantity;
-    java.lang.String brand;
-    java.lang.String color;
+    String brand;
+    String color;
     Set<Size> sizes = new HashSet<>();
-    java.lang.String imageUrl;
-    java.lang.String topLevelCategory;
-    java.lang.String secondLevelCategory;
-    java.lang.String thirdLevelCategory;
+    String imageUrl;
+    String topLevelCategory;
+    String secondLevelCategory;
+    String thirdLevelCategory;
 }

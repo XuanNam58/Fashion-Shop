@@ -19,7 +19,7 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
-    Size review;
+    String review;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
