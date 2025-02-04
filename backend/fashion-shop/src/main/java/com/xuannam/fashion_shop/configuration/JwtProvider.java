@@ -13,12 +13,11 @@ import java.util.Date;
 public class JwtProvider {
     SecretKey secretKey = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
     public String generateToken(Authentication auth) {
-        String jwt = Jwts.builder()
+        return Jwts.builder()
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + 86400000))
                 .claim("email", auth.getName())
                 .signWith(secretKey).compact();
-        return jwt;
     }
 
     public String getEmailFromToken(String jwt) {
@@ -28,8 +27,6 @@ public class JwtProvider {
                 .build()
                 .parseClaimsJws(jwt)
                 .getBody();
-        String email = String.valueOf(claims.get("email"));
-
-        return email;
+        return String.valueOf(claims.get("email"));
     }
 }

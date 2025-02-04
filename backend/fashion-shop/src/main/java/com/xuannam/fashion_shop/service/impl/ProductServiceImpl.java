@@ -83,11 +83,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public java.lang.String deleteProduct(Long productId) throws ProductException {
+    public String deleteProduct(Long productId) throws ProductException {
         Product product = findProductById(productId);
         product.getSizes().clear();
         productRepository.delete(product);
         return "Product deleted Successfully";
+    }
+
+    @Override
+    public List<Product> findAllProducts() {
+        return productRepository.findAll();
     }
 
     @Override
