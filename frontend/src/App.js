@@ -10,8 +10,7 @@ import Checkout from "./customer/components/Checkout/Checkout.jsx";
 import Order from "./customer/components/Order/Order.jsx";
 import OrderDetails from "./customer/components/Order/OrderDetails.jsx";
 import { Route, Routes } from "react-router-dom";
-import CustomerRouters from "./customer/Routers/CustomerRouters.jsx";
-
+import CustomerRouters from "./Routers/CustomerRouters.jsx";
 function App() {
   return (
     <div className="">
