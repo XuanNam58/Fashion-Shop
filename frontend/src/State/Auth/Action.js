@@ -37,6 +37,20 @@ const loginFailure = (error) => ({ type: LOGIN_FAILURE, payload: error });
 export const login = (userData) => async (dispatch) => {
   dispatch(loginRequest());
   try {
+    /**
+     * axios là một thư viện HTTP client dựa trên Promise, được sử dụng để thực hiện các yêu cầu HTTP (như GET, POST, PUT, DELETE) từ trình duyệt hoặc Node.js.
+     * await dùng để đợi cho đến khi Promise được giải quyết, sau đó trả về kết quả.
+     * async là một từ khóa được sử dụng để khai báo một hàm bất đồng bộ (asynchronous function).
+     *  Khi một hàm được khai báo với async, nó sẽ tự động trả về một Promise. 
+     *  Nếu hàm trả về một giá trị cụ thể, giá trị đó sẽ được bọc trong một Promise được resolve. Nếu hàm throw một lỗi, Promise sẽ bị reject.
+     */
+
+
+    /**
+     * Bất đồng bộ (Asynchronous): Xử lý các tác vụ không cần chờ đợi, giúp chương trình chạy mượt mà hơn.
+     * Promise: Đại diện cho kết quả của một tác vụ bất đồng bộ, có thể thành công (resolve) hoặc thất bại (reject).
+     * Async/Await: Cú pháp giúp làm việc với Promise một cách dễ đọc và gọn gàng hơn. */ 
+
     const response = await axios.post(`${API_BASE_URL}/auth/signin`, userData);
     const user = response.data;
     if (user.jwt) {
@@ -51,12 +65,12 @@ export const login = (userData) => async (dispatch) => {
 const getUserRequest = () => ({ type: GET_USER_REQUEST });
 const getUserSuccess = (user) => ({ type: GET_USER_SUCCESS, payload: user });
 const getUserFailure = (error) => ({ type: GET_USER_FAILURE, payload: error });
-export const getUser = (userData) => async (dispatch) => {
+export const getUser = (jwt) => async (dispatch) => {
   dispatch(getUserRequest());
   try {
     const response = await axios.post(`${API_BASE_URL}/api/users/profile`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${jwt}`,
       },
     });
     const user = response.data;
@@ -69,4 +83,5 @@ export const getUser = (userData) => async (dispatch) => {
 
 export const logout = () => (dispatch) => {
   dispatch({ type: "LOGOUT", payload: null });
+  localStorage.clear();
 };

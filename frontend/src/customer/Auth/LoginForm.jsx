@@ -1,10 +1,14 @@
 import { Email } from "@mui/icons-material";
 import { Button, Grid, TextField } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { getUser, login } from "../../State/Auth/Action";
 
 const LoginForm = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -14,6 +18,9 @@ const LoginForm = () => {
       email: data.get("email"),
       password: data.get("password"),
     };
+
+    dispatch(login(userData));
+
     console.log("userData ", userData);
   };
   return (
