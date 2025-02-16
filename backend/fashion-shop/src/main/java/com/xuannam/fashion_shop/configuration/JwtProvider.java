@@ -23,7 +23,7 @@ public class JwtProvider {
     public String getEmailFromToken(String jwt) {
         jwt = jwt.substring(7);
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(JwtConstant.SECRET_KEY)
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(jwt)
                 .getBody();

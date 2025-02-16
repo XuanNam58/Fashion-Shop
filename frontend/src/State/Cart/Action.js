@@ -14,10 +14,11 @@ import {
   UPDATE_CART_ITEM_SUCCESS,
 } from "./ActionType.js";
 
-export const get = () => async (dispatch) => {
+export const getCart = () => async (dispatch) => {
   dispatch({ type: GET_CART_REQUEST });
   try {
     const { data } = await api.get(`/api/cart/`);
+    console.log("data ---", data);
     dispatch({ type: GET_CART_SUCCESS, payload: data });
   } catch (e) {
     dispatch({ type: GET_CART_FAILURE, payload: e.message });
@@ -34,10 +35,10 @@ export const addItemToCart = (reqData) => async (dispatch) => {
   }
 };
 
-export const removeCartItem = (reqData) => async (dispatch) => {
+export const removeCartItem = (cartItemId) => async (dispatch) => {
   dispatch({ type: REMOVE_CART_ITEM_REQUEST });
   try {
-    const { data } = await api.delete(`/api/cart_items/${reqData.cartItemId}`);
+    const { data } = await api.delete(`/api/cart_items/${cartItemId}`);
     dispatch({ type: REMOVE_CART_ITEM_SUCCESS, payload: data });
   } catch (e) {
     dispatch({ type: REMOVE_CART_ITEM_FAILURE, payload: e.message });

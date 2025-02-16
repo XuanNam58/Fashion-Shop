@@ -33,8 +33,9 @@ import {
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { findProducts } from "../../../State/Product/Action";
+import Pagination from "@mui/material/Pagination";
 
 const sortOptions = [
   { name: "Price: Low to High", href: "#", current: false },
@@ -51,6 +52,12 @@ export default function Product() {
   const navigate = useNavigate();
   const param = useParams();
   const dispatch = useDispatch();
+  const { products } = useSelector((store) => store);
+  /* useSelector: Đây là một hook được cung cấp bởi react-redux, 
+  cho phép bạn lấy state từ Redux store trong các component React.
+
+    store => store: Hàm này trả về toàn bộ state của Redux store. 
+  Trong trường hợp này, product được lấy ra từ state. */
 
   const decodedQueryString = decodeURIComponent(location.search);
   const searchParams = new URLSearchParams(decodedQueryString);
@@ -59,8 +66,16 @@ export default function Product() {
   const priceValue = searchParams.get("price");
   const discount = searchParams.get("discount");
   const sortValue = searchParams.get("sort");
-  const pageNumber = searchParams.get("page");
+  const pageNumber = searchParams.get("page") || 1;
   const stock = searchParams.get("stock");
+
+
+  const handlePaginationChange = (value) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set("page", value);
+    const query = searchParams.toString();
+    navigate({ search: `?${query}` });
+  };
 
   const handleFilter = (value, sectionId) => {
     const searchParams = new URLSearchParams(location.search);
@@ -92,7 +107,7 @@ export default function Product() {
 
   useEffect(() => {
     const [minPrice, maxPrice] =
-      priceValue === null ? [0, 10000] : priceValue.split("-").map(Number);
+      priceValue === null ? [0, 20000000] : priceValue.split("-").map(Number);
     const data = {
       category: param.levelThree,
       colors: colorValue || [],
@@ -100,12 +115,12 @@ export default function Product() {
       minPrice,
       maxPrice,
       minDiscount: discount || 0,
-      sort:sortValue || "price_low",
+      sort: sortValue || "price_low",
+      stock: stock,
       pageNumber: pageNumber - 1,
       pageSize: 10,
-      stock: stock
     };
-    dispatch(findProducts(data))
+    dispatch(findProducts(data));
   }, [
     param.levelThree,
     colorValue,
@@ -115,6 +130,7 @@ export default function Product() {
     sortValue,
     pageNumber,
     stock,
+    dispatch,
   ]);
 
   return (
@@ -437,11 +453,22 @@ export default function Product() {
               {/* Product grid */}
               <div className="lg:col-span-4 w-full">
                 <div className="flex flex-wrap justify-center bg-white py-5">
-                  {mens_vest.map((item) => (
-                    <ProductCard product={item} />
-                  ))}
+                  {products.products &&
+                    products.products?.content?.map((item) => (
+                      <ProductCard product={item} />
+                    ))}
                 </div>
               </div>
+            </div>
+          </section>
+
+          <section className="w-full px=[3.6rem]">
+            <div className="px-4 py-5 flex justify-center">
+              <Pagination
+                count={products.products?.totalPages}
+                color="secondary"
+                onChange={(e, value) => handlePaginationChange(value)}
+              />
             </div>
           </section>
         </main>

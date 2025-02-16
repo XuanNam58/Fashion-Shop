@@ -3,7 +3,7 @@ package com.xuannam.fashion_shop.service.impl;
 import com.xuannam.fashion_shop.dto.resquest.CreateProductRequest;
 import com.xuannam.fashion_shop.entity.Category;
 import com.xuannam.fashion_shop.entity.Product;
-import com.xuannam.fashion_shop.entity.Size;
+
 import com.xuannam.fashion_shop.exception.ProductException;
 import com.xuannam.fashion_shop.repository.CategoryRepository;
 import com.xuannam.fashion_shop.repository.ProductRepository;
@@ -120,7 +120,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<Product> getAllProduct(java.lang.String category, List<java.lang.String> colors, List<String> sizes, Integer minPrice, Integer maxPrice, Integer minDiscount, java.lang.String sort, java.lang.String stock, Integer pageNumber, Integer pageSize) {
+    public Page<Product> getAllProduct(String category, List<String> colors, List<String> sizes, Integer minPrice, Integer maxPrice, Integer minDiscount, String sort, String stock, Integer pageNumber, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         List<Product> products = productRepository.filterProducts(category, minPrice, maxPrice, minDiscount, sort);
         /*filter sẽ giữ lại các phần tử thỏa mãn điều kiện
@@ -133,10 +133,9 @@ public class ProductServiceImpl implements ProductService {
 
         if (stock != null) {
             if (stock.equals("in_stock")) {
-                products.stream().filter(product -> product.getQuantity() > 0).collect(Collectors.toList());
-            }
-            else if (stock.equals("out_of_stock")) {
-                products.stream().filter(product -> product.getQuantity() < 0).collect(Collectors.toList());
+                products = products.stream().filter(product -> product.getQuantity() > 0).collect(Collectors.toList());
+            } else if (stock.equals("out_of_stock")) {
+                products = products.stream().filter(product -> product.getQuantity() < 0).collect(Collectors.toList());
             }
         }
 

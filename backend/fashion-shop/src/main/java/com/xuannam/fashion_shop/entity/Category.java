@@ -2,6 +2,7 @@ package com.xuannam.fashion_shop.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,7 +19,7 @@ public class Category {
     Long id;
 
     @NotNull
-    @jakarta.validation.constraints.Size(max = 50)
+    @Size(max = 50)
     String name;
 
     @ManyToOne

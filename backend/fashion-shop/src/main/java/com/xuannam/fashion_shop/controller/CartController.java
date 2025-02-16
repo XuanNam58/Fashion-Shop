@@ -14,6 +14,7 @@ import io.jsonwebtoken.Jwts;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +38,7 @@ public class CartController {
     public ResponseEntity<ApiResponse> addItemToCart(@RequestBody AddItemRequest request,
                                                      @RequestHeader("Authorization") String jwt) throws ProductException, UserException {
         User user = userService.findUserProfileByJwt(jwt);
+
         cartService.addCartItem(user.getId(), request);
         ApiResponse apiResponse = ApiResponse.builder()
                 .status(true)

@@ -6,14 +6,18 @@ import com.xuannam.fashion_shop.entity.CartItem;
 import com.xuannam.fashion_shop.entity.Product;
 import com.xuannam.fashion_shop.entity.User;
 import com.xuannam.fashion_shop.exception.ProductException;
+import com.xuannam.fashion_shop.exception.UserException;
 import com.xuannam.fashion_shop.repository.CartRepository;
 import com.xuannam.fashion_shop.service.CartItemService;
 import com.xuannam.fashion_shop.service.CartService;
 import com.xuannam.fashion_shop.service.ProductService;
+import com.xuannam.fashion_shop.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
 
 @Service
 @RequiredArgsConstructor
@@ -22,16 +26,25 @@ public class CartServiceImpl implements CartService {
     CartRepository cartRepository;
     CartItemService cartItemService;
     ProductService productService;
+    UserService userService;
 
     @Override
     public Cart createCart(User user) {
-        Cart cart = Cart.builder().user(user).build();
+        Cart cart = Cart.builder()
+                .user(user)
+                .cartItems(new HashSet<>())
+                .build();
         return cartRepository.save(cart);
     }
 
     @Override
-    public String addCartItem(Long userId, AddItemRequest request) throws ProductException {
+    public String addCartItem(Long userId, AddItemRequest request) throws ProductException, UserException {
         Cart cart = cartRepository.findByUserId(userId);
+
+        if (cart == null) {
+            cart = createCart(userService.findUserById(userId));
+        }
+
         Product product = productService.findProductById(request.getProductId());
         CartItem isPresent = cartItemService.isCartItemExist(cart, product, request.getSize(), userId);
 

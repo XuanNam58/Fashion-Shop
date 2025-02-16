@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -22,8 +24,8 @@ public class ProductController {
 
     @GetMapping("/products")
     public ResponseEntity<Page<Product>> findProductByCategoryHandler(@RequestParam String category,
-                                                                      @RequestParam List<String> colors,
-                                                                      @RequestParam List<String> sizes,
+                                                                      @RequestParam(name = "color", required = false) List<String> colors,
+                                                                      @RequestParam(name = "size", required = false) List<String> sizes,
                                                                       @RequestParam Integer minPrice,
                                                                       @RequestParam Integer maxPrice,
                                                                       @RequestParam Integer minDiscount,
@@ -31,10 +33,38 @@ public class ProductController {
                                                                       @RequestParam String stock,
                                                                       @RequestParam Integer pageNumber,
                                                                       @RequestParam Integer pageSize) {
+
+
+        colors = colors != null ? colors : Collections.emptyList();
+        sizes = sizes != null ? sizes : Collections.emptyList();
+
+
         Page<Product> res = productService.getAllProduct(category, colors, sizes, minPrice, maxPrice,
                 minDiscount, sort, stock, pageNumber, pageSize);
         return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
     }
+
+//    @GetMapping("/products")
+//    public ResponseEntity<Page<Product>> findProductByCategoryHandler(
+//            @RequestParam String category,
+//            @RequestParam(required = false) List<String> colors,
+//            @RequestParam(required = false) List<String> sizes,
+//            @RequestParam Integer minPrice,
+//            @RequestParam Integer maxPrice,
+//            @RequestParam Integer minDiscount,
+//            @RequestParam String sort,
+//            @RequestParam(required = false) String stock,  // ✅ Cho phép null
+//            @RequestParam(required = false, defaultValue = "0") Integer pageNumber,  // ✅ Mặc định là 0
+//            @RequestParam(required = false, defaultValue = "10") Integer pageSize) { // ✅ Mặc định là 10
+//
+//        // Nếu colors hoặc sizes bị null, gán danh sách rỗng để tránh lỗi
+//        if (colors == null) colors = new ArrayList<>();
+//        if (sizes == null) sizes = new ArrayList<>();
+//
+//        Page<Product> res = productService.getAllProduct(category, colors, sizes, minPrice, maxPrice,
+//                minDiscount, sort, stock, pageNumber, pageSize);
+//        return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
+//    }
 
     @GetMapping("/products/id/{productId}")
     public ResponseEntity<Product> findProductByHandler(@PathVariable Long productId) throws ProductException {

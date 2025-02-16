@@ -11,14 +11,14 @@ import {
 export const findProducts = (reqData) => async (dispatch) => {
   dispatch({ type: FIND_PRODUCTS_REQUEST });
   const {
+    category,
     colors,
     sizes,
     minPrice,
     maxPrice,
     minDiscount,
-    category,
-    stock,
     sort,
+    stock,
     pageNumber,
     pageSize,
   } = reqData;
@@ -33,11 +33,11 @@ export const findProducts = (reqData) => async (dispatch) => {
   }
 };
 
-const findProductsById = (reqData) => async (dispatch) => {
+export const findProductsById = (reqData) => async (dispatch) => {
   dispatch({ type: FIND_PRODUCT_BY_ID_REQUEST });
   const { productId } = reqData;
   try {
-    const { data } = await api.get(`/api/products/${productId}`);
+    const { data } = await api.get(`/api/products/id/${productId}`);
 
     dispatch({ type: FIND_PRODUCT_BY_ID_SUCCESS, payload: data });
   } catch (e) {

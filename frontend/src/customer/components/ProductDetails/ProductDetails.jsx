@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Radio, RadioGroup } from "@headlessui/react";
 import { Box, Button, Grid, LinearProgress, Rating } from "@mui/material";
 import ProductReviewCard from "./ProductReviewCard";
 import { mens_vest } from "../../../Data/mens_vest";
 import HomeSectionCard from "../HomeSectionCard/HomeSectionCard.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { findProductsById } from "../../../State/Product/Action.js";
+import { addItemToCart } from "../../../State/Cart/Action.js";
 
 const product = {
   name: "Basic Tee 6-Pack",
@@ -64,13 +67,23 @@ function classNames(...classes) {
 }
 
 export default function ProductDetails() {
-  const [selectedColor, setSelectedColor] = useState(product.colors[0]);
-  const [selectedSize, setSelectedSize] = useState(product.sizes[2]);
+  const [selectedSize, setSelectedSize] = useState("");
   const navigate = useNavigate();
+  const params = useParams();
+  const dispatch = useDispatch();
+  const {products} = useSelector(store=>store);
+
 
   const handleAddToCart = () => {
+    const data = {productId:params.productId, size:selectedSize.name};
+    dispatch(addItemToCart(data))
     navigate("/cart");
   };
+
+  useEffect(() => {
+    // dispatch(findProductsById(params.productId));
+    dispatch(findProductsById({ productId: params.productId }));
+  }, [params.productId]);
 
   return (
     <div className="bg-white lg:px-20">
@@ -120,7 +133,7 @@ export default function ProductDetails() {
             <div className="overflow-hidden rounded-lg max-w-[30rem] max-h-[35rem]">
               <img
                 alt={product.images[0].alt}
-                src={product.images[0].src}
+                src={products.product?.imageUrl}
                 className="hidden size-full rounded-lg object-cover lg:block"
               />
             </div>
@@ -144,10 +157,10 @@ export default function ProductDetails() {
           >
             <div className="lg:col-span-2">
               <h1 className="text-lg lg:text-xl font-semibold text-gray-900">
-                Universaloutfit
+                {products.product?.brand}
               </h1>
               <h1 className="text-lg lg:text-xl text-gray-900 opacity-60 pt-1">
-                Casual Puff Sleeves Solid
+              {products.product?.title}
               </h1>
             </div>
 
@@ -156,9 +169,9 @@ export default function ProductDetails() {
               <h2 className="sr-only">Product information</h2>
 
               <div className="flex space-x-5 items-center text-lg lg:text-xl text-gray-900 mt-6">
-                <p className="font-semibold">199</p>
-                <p className="opacity-50 line-through">211</p>
-                <p className="text-green-600 font-semibold">5% off</p>
+                <p className="font-semibold">{products.product?.discountedPrice}</p>
+                <p className="opacity-50 line-through">{products.product?.price}</p>
+                <p className="text-green-600 font-semibold">{products.product?.discountPercent}% off</p>
               </div>
 
               {/* Reviews */}
@@ -176,6 +189,7 @@ export default function ProductDetails() {
               </div>
 
               <form className="mt-10">
+
                 {/* Sizes */}
                 <div className="mt-10">
                   <div className="flex items-center justify-between">
