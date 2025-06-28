@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -115,8 +116,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findProductByCategory(java.lang.String category) {
-        return null;
+    public List<Product> findProductByCategory(String category) {
+        return productRepository.findProductByCategory(category);
     }
 
     @Override
@@ -145,5 +146,22 @@ public class ProductServiceImpl implements ProductService {
         List<Product> pageContent = products.subList(startIndex, endIndex);
 
         return new PageImpl<>(pageContent, pageable, products.size());
+    }
+
+    @Override
+    public List<Product> getProductSuggestions(String q, int limit) {
+        if (q == null || q.trim().isEmpty()) return Collections.emptyList();
+        Pageable pageable = PageRequest.of(0, limit);
+        return productRepository.getProductSuggestions(q, pageable).stream()
+                .limit(limit)
+                .toList();
+    }
+
+    @Override
+    public Page<Product> searchProducts(String q, Pageable pageable) {
+        if (q == null || q.trim().isEmpty()) {
+            return Page.empty(); // Trả về trang rỗng nếu không có từ khóa
+        }
+        return productRepository.searchProducts(q, pageable);
     }
 }

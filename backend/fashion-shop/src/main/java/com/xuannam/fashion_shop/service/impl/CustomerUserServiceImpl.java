@@ -6,12 +6,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -28,9 +30,12 @@ public class CustomerUserServiceImpl implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found with email - " + username);
         }
-        List<GrantedAuthority> authorities = new ArrayList<>();
         /*Trả về org.springframework.security.core.userdetails.User để sử dụng cho việc xác thực
         * ở các lớp/hàm/service khác ...*/
-            return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
+            return new org.springframework.security.core.userdetails.User(
+                    user.getEmail(),
+                    user.getPassword(),
+                    Collections.singletonList(new
+                            SimpleGrantedAuthority("ROLE_" + user.getRole())));
     }
 }

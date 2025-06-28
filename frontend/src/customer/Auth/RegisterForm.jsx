@@ -1,6 +1,6 @@
 import { Email } from "@mui/icons-material";
-import { Button, Grid, TextField } from "@mui/material";
-import React, { useEffect } from "react";
+import { Button, Grid, TextField, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getUser, register } from "../../State/Auth/Action";
@@ -9,29 +9,30 @@ import { store } from "../../State/store";
 const RegisterForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const jwt = localStorage.getItem("jwt");
-  const {auth}= useSelector(store=>store);
+  const { isLoading, error, jwt } = useSelector((store) => store.auth);
 
   useEffect(() => {
     if (jwt) {
       dispatch(getUser(jwt));
     }
-  }, [jwt, auth.jwt]);
+  }, [jwt, navigate]);
 
-  
+  const [userData, setUserData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    const data = new FormData(e.currentTarget);
-    const userData = {
-      firstName: data.get("firstName"),
-      lastName: data.get("lastName"),
-      email: data.get("email"),
-      password: data.get("password"),
-    };
     dispatch(register(userData));
-    console.log("userData ", userData);
   };
+
+  const handleChange = (e) => {
+    setUserData({ ...userData, [e.target.name]: e.target.value });
+  };
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -44,6 +45,9 @@ const RegisterForm = () => {
               label="First Name"
               fullWidth
               autoComplete="given-name"
+              value={userData.firstName}
+              onChange={handleChange}
+              disabled={isLoading}
             />
           </Grid>
 
@@ -55,6 +59,9 @@ const RegisterForm = () => {
               label="Last Name"
               fullWidth
               autoComplete="given-name"
+              value={userData.lastName}
+              onChange={handleChange}
+              disabled={isLoading}
             />
           </Grid>
 
@@ -66,6 +73,9 @@ const RegisterForm = () => {
               label="Email"
               fullWidth
               autoComplete="email"
+              value={userData.email}
+              onChange={handleChange}
+              disabled={isLoading}
             />
           </Grid>
 
@@ -77,6 +87,9 @@ const RegisterForm = () => {
               label="Password"
               fullWidth
               autoComplete="password"
+              value={userData.password}
+              onChange={handleChange}
+              disabled={isLoading}
             />
           </Grid>
 
@@ -87,10 +100,16 @@ const RegisterForm = () => {
               variant="contained"
               size="large"
               sx={{ padding: ".8rem 0", bgcolor: "#9155FD" }}
+              disabled={isLoading}
             >
-              Register
+              {isLoading ? "Registering..." : "Register"}
             </Button>
           </Grid>
+          {error && (
+            <Grid item xs={12}>
+              <Typography color="error">{error}</Typography>
+            </Grid>
+          )}
         </Grid>
       </form>
       <div className="flex justify-center flex-col items-center">
@@ -99,7 +118,7 @@ const RegisterForm = () => {
           <Button
             onClick={() => navigate("/login")}
             className="ml-5"
-            size="small"
+            size="small"disabled={isLoading}
           >
             {" "}
             Login

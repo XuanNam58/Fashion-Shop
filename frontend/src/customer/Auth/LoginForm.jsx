@@ -1,33 +1,36 @@
 import { Email } from "@mui/icons-material";
-import { Button, Grid, TextField } from "@mui/material";
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { Button, TextField, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getUser, login } from "../../State/Auth/Action";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isLoading, error, jwt } = useSelector((store) => store.auth);
 
+  useEffect(() => {
+    if (jwt) {
+      navigate("/");
+    }
+  }, [jwt, navigate]);
+
+  const [userData, setUserData] = useState({ email: "", password: "" });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    const data = new FormData(e.currentTarget);
-    const userData = {
-      email: data.get("email"),
-      password: data.get("password"),
-    };
-
     dispatch(login(userData));
+  };
 
-    console.log("userData ", userData);
+  const handleChange = (e) => {
+    setUserData({ ...userData, [e.target.name]: e.target.value });
   };
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
+        <div className="space-y-6">
+          <div>
             <TextField
               required
               id="email"
@@ -35,10 +38,13 @@ const LoginForm = () => {
               label="Email"
               fullWidth
               autoComplete="email"
+              value={userData.email}
+              onChange={handleChange}
+              disabled={isLoading}
             />
-          </Grid>
+          </div>
 
-          <Grid item xs={12}>
+          <div>
             <TextField
               required
               id="password"
@@ -46,21 +52,30 @@ const LoginForm = () => {
               label="Password"
               fullWidth
               autoComplete="password"
+              value={userData.password}
+              onChange={handleChange}
+              disabled={isLoading}
             />
-          </Grid>
+          </div>
 
-          <Grid item xs={12}>
+          <div>
             <Button
               className="bg-[#9155FD] w-full"
               type="submit"
               variant="contained"
               size="large"
               sx={{ padding: ".8rem 0", bgcolor: "#9155FD" }}
+              disabled={isLoading}
             >
-              Login
+              {isLoading ? "Logging in..." : "Login"}
             </Button>
-          </Grid>
-        </Grid>
+          </div>
+          {error && (
+            <div>
+              <Typography color="error">{error}</Typography>
+            </div>
+          )}
+        </div>
       </form>
 
       <div className="flex justify-center flex-col items-center">
@@ -70,8 +85,8 @@ const LoginForm = () => {
             onClick={() => navigate("/register")}
             className="ml-5"
             size="small"
+            disabled={isLoading}
           >
-            {" "}
             Register
           </Button>
         </div>

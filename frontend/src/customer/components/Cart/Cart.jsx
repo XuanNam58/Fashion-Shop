@@ -15,14 +15,16 @@ const Cart = () => {
 
   useEffect(() => {
     dispatch(getCart());
-  }, [cart.updateCartItem, cart.deleteCartItem]);
+  }, [cart.cartItems, cart.updateCartItem, cart.deleteCartItem]);
+
+  const sortedCartItems = [...(cart.cart?.cartItems || [])].sort((a, b) => a.id - b.id);
 
   return (
     <div>
       <div className="lg:grid grid-cols-3 lg:px-16 relative">
         <div className="col-span-2">
-          {cart.cartItems.map((item) => (
-            <CartItem item={item} />
+          {sortedCartItems.map((item) => (
+            <CartItem key={item.id} item={item} />
           ))}
         </div>
         <div className="px-5 sticky top-0 h-[100vh] mt-5 lg:mt-0">

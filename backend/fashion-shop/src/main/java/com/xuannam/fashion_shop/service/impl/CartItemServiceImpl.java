@@ -39,10 +39,10 @@ public class CartItemServiceImpl implements CartItemService {
         CartItem item = findCartItemById(id);
         User user = userService.findUserById(userId);
 
-        if (user.getId().equals(userId)) {
+        if (user.getId().equals(userId) && cartItem.getSize().equals(item.getSize())) {
             item.setQuantity(cartItem.getQuantity());
-            item.setPrice(item.getQuantity() * item.getPrice());
-            item.setDiscountedPrice(item.getQuantity() * item.getDiscountedPrice());
+            item.setPrice(item.getQuantity() * item.getProduct().getPrice());
+            item.setDiscountedPrice(item.getQuantity() * item.getProduct().getDiscountedPrice());
         }
         return cartItemRepository.save(item);
     }
@@ -71,7 +71,7 @@ public class CartItemServiceImpl implements CartItemService {
     public CartItem findCartItemById(Long cartItemId) throws CartItemException {
         Optional<CartItem> opt = cartItemRepository.findById(cartItemId);
         if (opt.isPresent())
-            return  opt.get();
+            return opt.get();
         throw new CartItemException("CartItem not found with id: " + cartItemId);
     }
 }

@@ -1,0 +1,24 @@
+spring:
+  application:
+  name: fashion-shop
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/fashion_shop
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  redis:
+    host: localhost
+    port: 6379
+
+server:
+  port: 5454
+
+jwt:
+  secret: Qqt/ie/wY52lPujgC5CN5GY+5rhplntrVRAGxge01rEC7OIv9jhqbhbmSi2pWpnoxhzRibH3At9ZOtnXyIsHnvexOTq6CKPDZbfyP3HVFMc=

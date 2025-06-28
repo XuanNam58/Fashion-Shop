@@ -5,6 +5,7 @@ import com.xuannam.fashion_shop.entity.Product;
 import com.xuannam.fashion_shop.entity.Size;
 import com.xuannam.fashion_shop.exception.ProductException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -22,4 +23,7 @@ public interface ProductService {
 
     Page<Product> getAllProduct(java.lang.String category, List<String> colors, List<String> sizes, Integer minPrice, Integer maxPrice,
                                 Integer minDiscount, java.lang.String sort, java.lang.String stock, Integer pageNumber, Integer pageSize);
+    List<Product> getProductSuggestions(String q, int limit);
+
+    Page<Product> searchProducts(String q, Pageable pageable);
 }

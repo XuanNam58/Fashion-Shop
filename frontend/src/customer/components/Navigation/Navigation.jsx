@@ -10,10 +10,11 @@ import {
 import { Avatar, Button, Menu, MenuItem } from "@mui/material";
 import { deepPurple } from "@mui/material/colors";
 import { navigation } from "./navigationData";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthModal from "../../Auth/AuthModal";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser, logout } from "../../../State/Auth/Action";
+import ProductSearch from "../Product/ProductSearch";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -39,6 +40,7 @@ export default function Navigation() {
   };
 
   const handleOpen = () => {
+    navigate("/login");
     setOpenAuthModal(true);
   };
   const handleClose = () => {
@@ -257,12 +259,14 @@ export default function Navigation() {
 
               {/* Logo */}
               <div className="ml-4 flex lg:ml-0">
-                <span className="sr-only">Your Company</span>
-                <img
-                  src="https://iconape.com/wp-content/png_logo_vector/brock-lesnar-tattoo-logo.png"
-                  alt="Xuan Nam Dang"
-                  className="h-8 w-8 mr-2"
-                />
+                <Link to="/">
+                  <span className="sr-only">Your Company</span>
+                  <img
+                    src="https://iconape.com/wp-content/png_logo_vector/brock-lesnar-tattoo-logo.png"
+                    alt="Xuan Nam Dang"
+                    className="h-8 w-8 mr-2"
+                  />
+                </Link>
               </div>
 
               {/* Flyout menus */}
@@ -416,7 +420,7 @@ export default function Navigation() {
                       >
                         {auth.user?.firstName[0].toUpperCase()}
                       </Avatar>
-                      
+
                       <Menu
                         id="basic-menu"
                         anchorEl={anchorEl}
@@ -444,15 +448,8 @@ export default function Navigation() {
                 </div>
 
                 {/* Search */}
-                <div className="flex items-center lg:ml-6">
-                  <p className="p-2 text-gray-400 hover:text-gray-500">
-                    <span className="sr-only">Search</span>
-
-                    <MagnifyingGlassIcon
-                      className="h-6 w-6"
-                      aria-hidden="true"
-                    />
-                  </p>
+                <div className="flex items-center lg:ml-6 w-40 lg:w-64">
+                  <ProductSearch />
                 </div>
 
                 {/* Cart */}

@@ -1,8 +1,9 @@
 import { Box, Modal, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import RegisterForm from "./RegisterForm";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import LoginForm from "./LoginForm";
+import { useSelector } from "react-redux";
 
 const style = {
   position: "absolute",
@@ -18,6 +19,15 @@ const style = {
 
 const AuthModal = ({ handleClose, open }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { jwt, isLoading } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (jwt && !isLoading) {
+      handleClose(); // Đóng modal khi đăng nhập/thành công
+      navigate("/"); // Chuyển hướng về trang chính
+    }
+  }, [jwt, isLoading, handleClose, navigate]);
   return (
     <div>
       <Modal

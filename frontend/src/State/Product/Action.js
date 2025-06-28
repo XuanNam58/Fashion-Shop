@@ -33,7 +33,7 @@ export const findProducts = (reqData) => async (dispatch) => {
   }
 };
 
-export const findProductsById = (reqData) => async (dispatch) => {
+export const findProductById = (reqData) => async (dispatch) => {
   dispatch({ type: FIND_PRODUCT_BY_ID_REQUEST });
   const { productId } = reqData;
   try {
@@ -43,4 +43,16 @@ export const findProductsById = (reqData) => async (dispatch) => {
   } catch (e) {
     dispatch({ type: FIND_PRODUCT_BY_ID_FAILURE, payload: e.message });
   }
+};
+
+export const findProductsByCategory = () => async (dispatch) => {
+  const categories = ["vest", "shoes", "shirt"];
+  const results = await Promise.all(
+    categories.map((cat) =>
+      api.get(`/api/get-products-by-category?category=${cat}`).then(res => ({ [cat]: res.data }))
+    )
+  );
+  // Gộp các object lại thành 1 object
+  const productsByCategory = results.reduce((acc, cur) => ({ ...acc, ...cur }), {});
+  dispatch({ type: "SET_PRODUCTS_BY_CATEGORY", payload: productsByCategory });
 };

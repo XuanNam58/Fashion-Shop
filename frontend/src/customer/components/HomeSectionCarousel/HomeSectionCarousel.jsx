@@ -22,6 +22,11 @@ const HomeSectionCarousel = ({data, sectionName}) => {
     setActiveIndex(item);
   };
 
+  const itemsCount = data.length;
+  const itemsPerView = Math.min(itemsCount, 5.5); // hoặc lấy từ responsive config
+
+  const showNav = itemsCount > itemsPerView;
+
   const items = data
     .slice(0, 10)
     .map((item, index) => <HomeSectionCard product={item} />);
@@ -38,7 +43,7 @@ const HomeSectionCarousel = ({data, sectionName}) => {
           onSlideChanged={syncActiveIndex}
           activeIndex={activeIndex}
         />
-        {activeIndex !== items.length - 1 && (
+        {showNav && activeIndex !== items.length - 1 && (
           <Button
             variant="contained"
             className="z-50 bg-white"
@@ -58,7 +63,7 @@ const HomeSectionCarousel = ({data, sectionName}) => {
           </Button>
         )}
 
-        {activeIndex !== 0 && <Button
+        {showNav && activeIndex !== 0 && <Button
           variant="contained"
           className="z-50 bg-white"
           onClick={slidePrev}

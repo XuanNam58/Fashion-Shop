@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { StarIcon } from "@heroicons/react/20/solid";
 import { Radio, RadioGroup } from "@headlessui/react";
 import { Box, Button, Grid, LinearProgress, Rating } from "@mui/material";
 import ProductReviewCard from "./ProductReviewCard";
@@ -9,7 +8,7 @@ import { mens_vest } from "../../../Data/mens_vest";
 import HomeSectionCard from "../HomeSectionCard/HomeSectionCard.jsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { findProductsById } from "../../../State/Product/Action.js";
+import { findProductById } from "../../../State/Product/Action.js";
 import { addItemToCart } from "../../../State/Cart/Action.js";
 
 const product = {
@@ -71,18 +70,22 @@ export default function ProductDetails() {
   const navigate = useNavigate();
   const params = useParams();
   const dispatch = useDispatch();
-  const {products} = useSelector(store=>store);
-
-
+  const { products } = useSelector((store) => store);
+  const [error, setError] = useState("");
   const handleAddToCart = () => {
-    const data = {productId:params.productId, size:selectedSize.name};
-    dispatch(addItemToCart(data))
+    if (!selectedSize) {
+      setError("Please select a size");
+      return;
+    }
+    setError("");
+    const data = { productId: params.productId, size: selectedSize.name };
+    dispatch(addItemToCart(data));
     navigate("/cart");
   };
 
   useEffect(() => {
     // dispatch(findProductsById(params.productId));
-    dispatch(findProductsById({ productId: params.productId }));
+    dispatch(findProductById({ productId: params.productId }));
   }, [params.productId]);
 
   return (
@@ -121,7 +124,7 @@ export default function ProductDetails() {
                 aria-current="page"
                 className="font-medium text-gray-500 hover:text-gray-600"
               >
-                {product.name}
+                {products.product?.title}
               </a>
             </li>
           </ol>
@@ -160,7 +163,7 @@ export default function ProductDetails() {
                 {products.product?.brand}
               </h1>
               <h1 className="text-lg lg:text-xl text-gray-900 opacity-60 pt-1">
-              {products.product?.title}
+                {products.product?.title}
               </h1>
             </div>
 
@@ -169,9 +172,15 @@ export default function ProductDetails() {
               <h2 className="sr-only">Product information</h2>
 
               <div className="flex space-x-5 items-center text-lg lg:text-xl text-gray-900 mt-6">
-                <p className="font-semibold">{products.product?.discountedPrice}</p>
-                <p className="opacity-50 line-through">{products.product?.price}</p>
-                <p className="text-green-600 font-semibold">{products.product?.discountPercent}% off</p>
+                <p className="font-semibold">
+                  {products.product?.discountedPrice}
+                </p>
+                <p className="opacity-50 line-through">
+                  {products.product?.price}
+                </p>
+                <p className="text-green-600 font-semibold">
+                  {products.product?.discountPercent}% off
+                </p>
               </div>
 
               {/* Reviews */}
@@ -189,7 +198,6 @@ export default function ProductDetails() {
               </div>
 
               <form className="mt-10">
-
                 {/* Sizes */}
                 <div className="mt-10">
                   <div className="flex items-center justify-between">
@@ -250,10 +258,18 @@ export default function ProductDetails() {
                 <Button
                   onClick={handleAddToCart}
                   variant="contained"
-                  sx={{ px: "2rem", py: "1rem", bgcolor: "#9155fd" }}
+                  sx={{
+                    px: "2.5rem",
+                    py: "1rem",
+                    bgcolor: "#9155fd",
+                    marginTop: "1rem",
+                  }}
                 >
                   Add to Cart
                 </Button>
+                {error && (
+                  <div style={{ color: "red", marginTop: "8px" }}>{error}</div>
+                )}
               </form>
             </div>
 
@@ -264,7 +280,7 @@ export default function ProductDetails() {
 
                 <div className="space-y-6">
                   <p className="text-base text-gray-900">
-                    {product.description}
+                    {products?.product?.description}
                   </p>
                 </div>
               </div>
