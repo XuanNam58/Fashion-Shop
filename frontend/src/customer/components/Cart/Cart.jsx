@@ -15,7 +15,7 @@ const Cart = () => {
 
   useEffect(() => {
     dispatch(getCart());
-  }, [cart.cartItems, cart.updateCartItem, cart.deleteCartItem]);
+  }, [cart.cartItems.length, cart.updateCartItem, cart.deleteCartItem]);
 
   const sortedCartItems = [...(cart.cart?.cartItems || [])].sort((a, b) => a.id - b.id);
 

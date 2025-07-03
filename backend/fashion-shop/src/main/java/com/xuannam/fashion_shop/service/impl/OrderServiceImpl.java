@@ -54,8 +54,20 @@ public class OrderServiceImpl implements OrderService {
             orderItems.add(createdOrderItem);
         }
 
-        Order createdOrder = Order.builder().user(user).orderItems(orderItems).totalPrice(cart.getTotalPrice()).totalDiscountedPrice(cart.getTotalDiscountedPrice()).discount(cart.getDiscount()).totalItem(cart.getTotalItem()).shippingAddress(shippingAddress).orderDate(LocalDateTime.now())
-                .orderStatus(OrderStatus.PENDING.name()).paymentDetails(PaymentDetails.builder().status(PaymentStatus.PENDING.name()).build()).createdAt(LocalDateTime.now()).build();
+        Order createdOrder = Order.builder()
+                .user(user)
+                .orderItems(orderItems)
+                .totalPrice(cart.getTotalPrice())
+                .totalDiscountedPrice(cart.getTotalDiscountedPrice())
+                .discount(cart.getDiscount())
+                .totalItem(cart.getTotalItem())
+                .shippingAddress(shippingAddress)
+                .orderDate(LocalDateTime.now())
+                .orderStatus(OrderStatus.PENDING.name())
+                .paymentDetails(PaymentDetails.builder()
+                        .status(PaymentStatus.PENDING.name()).build())
+                .expireAt(LocalDateTime.now().plusMinutes(15))
+                .createdAt(LocalDateTime.now()).build();
         Order savedOrder = orderRepository.save(createdOrder);
 
         for (OrderItem item : orderItems) {

@@ -5,16 +5,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getUser, login } from "../../State/Auth/Action";
 
-const LoginForm = () => {
+const LoginForm = ({ onSwitchToRegister }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error, jwt } = useSelector((store) => store.auth);
 
-  useEffect(() => {
-    if (jwt) {
-      navigate("/");
-    }
-  }, [jwt, navigate]);
+  // useEffect(() => {
+  //   if (jwt) {
+  //     navigate("/");
+  //   }
+  // }, [jwt, navigate]);
 
   const [userData, setUserData] = useState({ email: "", password: "" });
 
@@ -80,15 +80,16 @@ const LoginForm = () => {
 
       <div className="flex justify-center flex-col items-center">
         <div className="py-3 flex items-center">
-          <p>If you don't have already account ?</p>
-          <Button
-            onClick={() => navigate("/register")}
-            className="ml-5"
-            size="small"
-            disabled={isLoading}
-          >
-            Register
-          </Button>
+          <p>
+            If you don't have already account?{" "}
+            <button
+              type="button"
+              onClick={onSwitchToRegister}
+              className="text-blue-500 underline"
+            >
+              Register
+            </button>
+          </p>
         </div>
       </div>
     </div>

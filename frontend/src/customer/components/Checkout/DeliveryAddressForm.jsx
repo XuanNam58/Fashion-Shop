@@ -8,7 +8,8 @@ import { createOrder } from "../../../State/Order/Action";
 const DeliveryAddressForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector((state) => state.auth.user);
+  console.log("user", user)
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,11 +21,11 @@ const DeliveryAddressForm = () => {
     const address = {
       firstName:data.get("firstName"),
       lastName:data.get("lastName"),
-      address:data.get("address"),
+      streetAddress:data.get("address"),
       city:data.get("city"),
       state:data.get("state"),
-      zip:data.get("zip"),
-      phoneNumber:data.get("phoneNumber"),
+      zipCode:data.get("zip"),
+      mobile:data.get("phoneNumber"),
     }
 
     // console.log("Address ", address);
@@ -34,6 +35,12 @@ const DeliveryAddressForm = () => {
     console.log("address: ", address);
   };
 
+  // Hàm xử lý khi bấm "Deliver Here" ở địa chỉ có sẵn
+  const handleDeliverHere = (address) => {
+    if (!address) return;
+    const orderData = { address, navigate };
+    dispatch(createOrder(orderData));
+  };
 
   return (
     <div>
@@ -44,11 +51,12 @@ const DeliveryAddressForm = () => {
           className="border rounded-e-md shadow-md h-[30.5rem] overflow-scroll"
         >
           <div className="p-5 py-7 border-b cursor-pointer">
-            <AddressCard address={user.address[0]} />
+            <AddressCard address={user?.addresses?.[0]} />
             <Button
               sx={{ mt: 2, bgcolor: "RGB(145 85 253)" }}
               size="large"
               variant="contained"
+              onClick={() => handleDeliverHere(user?.addresses?.[0])}
             >
               Delivery Here
             </Button>

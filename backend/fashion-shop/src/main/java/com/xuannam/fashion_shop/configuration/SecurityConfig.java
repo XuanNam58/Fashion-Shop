@@ -26,7 +26,8 @@ import java.util.Collections;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityConfig {
     String[] PUBLIC_ENDPOINTS = {"/auth/signin", "/auth/signup", "/auth/refresh-token", "/auth/logout"
-            , "/api/products", "/api/get-products-by-category", "/api/products/id/**", "/api/products/suggestions/**", "/api/products/search/**"};
+            , "/api/products", "/api/get-products-by-category", "/api/products/id/**", "/api/products/suggestions/**", "/api/products/search/**",
+            "/api/payment/vnpay-callback"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtValidator jwtValidator) throws Exception {

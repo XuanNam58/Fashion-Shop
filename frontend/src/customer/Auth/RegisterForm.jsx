@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { getUser, register } from "../../State/Auth/Action";
 import { store } from "../../State/store";
 
-const RegisterForm = () => {
+const RegisterForm = ({ onSwitchToLogin }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isLoading, error, jwt } = useSelector((store) => store.auth);
@@ -114,15 +114,14 @@ const RegisterForm = () => {
       </form>
       <div className="flex justify-center flex-col items-center">
         <div className="py-3 flex items-center">
-          <p>If you have already account ?</p>
-          <Button
-            onClick={() => navigate("/login")}
-            className="ml-5"
-            size="small"disabled={isLoading}
+          <p>If you have already account?</p>
+          <button
+            type="button"
+            onClick={onSwitchToLogin}
+            className="ml-5 text-blue-500 underline"
           >
-            {" "}
             Login
-          </Button>
+          </button>
         </div>
       </div>
     </div>

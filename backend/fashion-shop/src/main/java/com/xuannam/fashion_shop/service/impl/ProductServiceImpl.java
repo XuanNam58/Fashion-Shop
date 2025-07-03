@@ -103,6 +103,10 @@ public class ProductServiceImpl implements ProductService {
         if (request.getQuantity() != 0) {
             product.setQuantity(request.getQuantity());
         }
+
+        if (request.getSizes() != null && !request.getSizes().isEmpty()) {
+            product.setSizes(request.getSizes());
+        }
         return productRepository.save(product);
     }
 

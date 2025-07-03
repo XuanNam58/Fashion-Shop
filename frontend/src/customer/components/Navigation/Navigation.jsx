@@ -1,8 +1,7 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
-  MagnifyingGlassIcon,
   ShoppingBagIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
@@ -14,7 +13,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthModal from "../../Auth/AuthModal";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser, logout } from "../../../State/Auth/Action";
-import ProductSearch from "../Product/ProductSearch";
+import ExpandableProductSearch from "../Product/ExpandableProductSearch";
+import { AuthModalContext } from "../../Auth/AuthModalContext";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -24,13 +24,26 @@ export default function Navigation() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
-  const [openAuthModal, setOpenAuthModal] = useState(false);
+  const { openAuthModal, setOpenAuthModal, openAuthModalState } =
+    useContext(AuthModalContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const openUserMenu = Boolean(anchorEl);
   const jwt = localStorage.getItem("jwt");
   const { auth } = useSelector((store) => store);
   const dispatch = useDispatch();
   const location = useLocation();
+  const cart = useSelector((store) => store.cart);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const totalItems = cart?.cart?.totalItem || 0;
+
+  // Animation khi số lượng thay đổi
+  useEffect(() => {
+    if (totalItems > 0) {
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 500);
+    }
+  }, [totalItems]);
 
   const handleUserClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -40,8 +53,7 @@ export default function Navigation() {
   };
 
   const handleOpen = () => {
-    navigate("/login");
-    setOpenAuthModal(true);
+    openAuthModal("login");
   };
   const handleClose = () => {
     setOpenAuthModal(false);
@@ -449,21 +461,68 @@ export default function Navigation() {
 
                 {/* Search */}
                 <div className="flex items-center lg:ml-6 w-40 lg:w-64">
-                  <ProductSearch />
+                  <ExpandableProductSearch />
                 </div>
 
                 {/* Cart */}
                 <div className="ml-4 flow-root lg:ml-6">
-                  <Button className="group -m-2 flex items-center p-2">
-                    <ShoppingBagIcon
-                      className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                      aria-hidden="true"
-                    />
-                    <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                      2
-                    </span>
+                  <button
+                    onClick={() => navigate("/cart")}
+                    className="group relative -m-2 flex items-center p-2 rounded-lg hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    aria-label={`Shopping cart with ${totalItems} items`}
+                  >
+                    {/* Icon */}
+                    <div className="relative">
+                      <ShoppingBagIcon
+                        className="h-6 w-6 flex-shrink-0 text-gray-600 group-hover:text-gray-800 transition-colors duration-200"
+                        aria-hidden="true"
+                      />
+
+                      {/* Badge of number */}
+                      {totalItems > 0 && (
+                        <div
+                          className={`
+                absolute -top-2 -right-2 min-w-[20px] h-5 px-1
+                bg-indigo-600 text-white text-xs font-bold rounded-full 
+                flex items-center justify-center border-2 border-white
+                shadow-lg transition-all duration-300 transform
+                ${isAnimating ? "animate-bounce scale-110" : "scale-100"}
+                group-hover:bg-indigo-700 group-hover:scale-110
+              `}
+                        >
+                          {totalItems > 99 ? "99+" : totalItems}
+                        </div>
+                      )}
+                    </div>
+
                     <span className="sr-only">items in cart, view bag</span>
-                  </Button>
+                  </button>
+
+                  <style jsx>{`
+                    @keyframes bounce {
+                      0%,
+                      20%,
+                      53%,
+                      80%,
+                      100% {
+                        transform: translate3d(0, 0, 0);
+                      }
+                      40%,
+                      43% {
+                        transform: translate3d(0, -8px, 0);
+                      }
+                      70% {
+                        transform: translate3d(0, -4px, 0);
+                      }
+                      90% {
+                        transform: translate3d(0, -2px, 0);
+                      }
+                    }
+
+                    .animate-bounce {
+                      animation: bounce 0.5s ease-in-out;
+                    }
+                  `}</style>
                 </div>
               </div>
             </div>
@@ -471,7 +530,7 @@ export default function Navigation() {
         </nav>
       </header>
 
-      <AuthModal handleClose={handleClose} open={openAuthModal} />
+      <AuthModal handleClose={handleClose} open={openAuthModalState} />
     </div>
   );
 }

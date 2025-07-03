@@ -1,5 +1,6 @@
 package com.xuannam.fashion_shop.dto.resquest;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.xuannam.fashion_shop.entity.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

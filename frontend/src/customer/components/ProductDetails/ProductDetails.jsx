@@ -1,15 +1,16 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { Radio, RadioGroup } from "@headlessui/react";
-import { Box, Button, Grid, LinearProgress, Rating } from "@mui/material";
-import ProductReviewCard from "./ProductReviewCard";
-import { mens_vest } from "../../../Data/mens_vest";
-import HomeSectionCard from "../HomeSectionCard/HomeSectionCard.jsx";
-import { useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { findProductById } from "../../../State/Product/Action.js";
-import { addItemToCart } from "../../../State/Cart/Action.js";
+import { useEffect, useState } from "react"
+import { Radio, RadioGroup } from "@headlessui/react"
+import { Box, Button, Grid, LinearProgress, Rating } from "@mui/material"
+import ProductReviewCard from "./ProductReviewCard"
+import { mens_vest } from "../../../Data/mens_vest"
+import HomeSectionCard from "../HomeSectionCard/HomeSectionCard.jsx"
+import { useNavigate, useParams } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
+import { findProductById } from "../../../State/Product/Action.js"
+import { addItemToCart } from "../../../State/Cart/Action.js"
+import { toast } from "react-toastify"
 
 const product = {
   name: "Basic Tee 6-Pack",
@@ -58,51 +59,64 @@ const product = {
   ],
   details:
     'The 6-Pack includes two black, two white, and two heather gray Basic Tees. Sign up for our subscription service and be the first to get new, exciting colors, like our upcoming "Charcoal Gray" limited release.',
-};
-const reviews = { href: "#", average: 4, totalCount: 117 };
+}
+
+const reviews = { href: "#", average: 4, totalCount: 117 }
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
+  return classes.filter(Boolean).join(" ")
 }
 
 export default function ProductDetails() {
-  const [selectedSize, setSelectedSize] = useState("");
-  const navigate = useNavigate();
-  const params = useParams();
-  const dispatch = useDispatch();
-  const { products } = useSelector((store) => store);
-  const [error, setError] = useState("");
+  const [selectedSize, setSelectedSize] = useState("")
+  const [isAnimating, setIsAnimating] = useState(false)
+  const navigate = useNavigate()
+  const params = useParams()
+  const dispatch = useDispatch()
+  const { products } = useSelector((store) => store)
+  const [error, setError] = useState("")
+  const user = useSelector((store) => store.auth.user)
+
+  const handleSizeChange = (size) => {
+    setIsAnimating(true)
+    setSelectedSize(size)
+
+    // Reset animation after a short delay
+    setTimeout(() => {
+      setIsAnimating(false)
+    }, 200)
+  }
+
   const handleAddToCart = () => {
     if (!selectedSize) {
-      setError("Please select a size");
-      return;
+      toast.error("Please select a size")
+      return
     }
-    setError("");
-    const data = { productId: params.productId, size: selectedSize.name };
-    dispatch(addItemToCart(data));
-    navigate("/cart");
-  };
+
+    if (!user) {
+      toast.error("Please login to add product to cart")
+      return
+    }
+
+    const data = { productId: params.productId, size: selectedSize.name }
+    dispatch(addItemToCart(data))
+    toast.success("Added product successfully")
+    navigate("/cart")
+  }
 
   useEffect(() => {
-    // dispatch(findProductsById(params.productId));
-    dispatch(findProductById({ productId: params.productId }));
-  }, [params.productId]);
+    dispatch(findProductById({ productId: params.productId }))
+  }, [params.productId])
 
   return (
     <div className="bg-white lg:px-20">
       <div className="pt-6">
         <nav aria-label="Breadcrumb">
-          <ol
-            role="list"
-            className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8"
-          >
+          <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
             {product.breadcrumbs.map((breadcrumb) => (
               <li key={breadcrumb.id}>
                 <div className="flex items-center">
-                  <a
-                    href={breadcrumb.href}
-                    className="mr-2 text-sm font-medium text-gray-900"
-                  >
+                  <a href={breadcrumb.href} className="mr-2 text-sm font-medium text-gray-900">
                     {breadcrumb.name}
                   </a>
                   <svg
@@ -119,11 +133,7 @@ export default function ProductDetails() {
               </li>
             ))}
             <li className="text-sm">
-              <a
-                href={product.href}
-                aria-current="page"
-                className="font-medium text-gray-500 hover:text-gray-600"
-              >
+              <a href={product.href} aria-current="page" className="font-medium text-gray-500 hover:text-gray-600">
                 {products.product?.title}
               </a>
             </li>
@@ -136,16 +146,19 @@ export default function ProductDetails() {
             <div className="overflow-hidden rounded-lg max-w-[30rem] max-h-[35rem]">
               <img
                 alt={product.images[0].alt}
-                src={products.product?.imageUrl}
+                src={products.product?.imageUrl || "/placeholder.svg"}
                 className="hidden size-full rounded-lg object-cover lg:block"
               />
             </div>
             <div className="flex flex-wrap space-x-5 justify-center">
-              {product.images.map((item) => (
-                <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg max-w-[5rem] max-h-[5rem] mt-4">
+              {product.images.map((item, index) => (
+                <div
+                  key={index}
+                  className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg max-w-[5rem] max-h-[5rem] mt-4"
+                >
                   <img
                     alt={item.alt}
-                    src={item.src}
+                    src={item.src || "/placeholder.svg"}
                     className="aspect-[3/2] w-full rounded-lg object-cover"
                   />
                 </div>
@@ -154,17 +167,10 @@ export default function ProductDetails() {
           </div>
 
           {/* Product info */}
-          <div
-            className="lg:col-span-1 maxt-auto max-w-2xl px-4 pb-16 sm:px-6 lg:max-w-7xl lg:px-8 
-          lg:pb-24"
-          >
+          <div className="lg:col-span-1 maxt-auto max-w-2xl px-4 pb-16 sm:px-6 lg:max-w-7xl lg:px-8 lg:pb-24">
             <div className="lg:col-span-2">
-              <h1 className="text-lg lg:text-xl font-semibold text-gray-900">
-                {products.product?.brand}
-              </h1>
-              <h1 className="text-lg lg:text-xl text-gray-900 opacity-60 pt-1">
-                {products.product?.title}
-              </h1>
+              <h1 className="text-lg lg:text-xl font-semibold text-gray-900">{products.product?.brand}</h1>
+              <h1 className="text-lg lg:text-xl text-gray-900 opacity-60 pt-1">{products.product?.title}</h1>
             </div>
 
             {/* Options */}
@@ -172,15 +178,9 @@ export default function ProductDetails() {
               <h2 className="sr-only">Product information</h2>
 
               <div className="flex space-x-5 items-center text-lg lg:text-xl text-gray-900 mt-6">
-                <p className="font-semibold">
-                  {products.product?.discountedPrice}
-                </p>
-                <p className="opacity-50 line-through">
-                  {products.product?.price}
-                </p>
-                <p className="text-green-600 font-semibold">
-                  {products.product?.discountPercent}% off
-                </p>
+                <p className="font-semibold">{products.product?.discountedPrice}</p>
+                <p className="opacity-50 line-through">{products.product?.price}</p>
+                <p className="text-green-600 font-semibold">{products.product?.discountPercent}% off</p>
               </div>
 
               {/* Reviews */}
@@ -188,66 +188,74 @@ export default function ProductDetails() {
                 <div className="flex items-center space-x-3">
                   <Rating name="read-only" value={5.5} readOnly />
                   <p className="opacity-50 text-sm">56540 Ratings</p>
-                  <p
-                    className="ml-3 text-sm font-medium text-indigo-600 
-                  hover:text-indigo-500"
-                  >
-                    3870 Reviews
-                  </p>
+                  <p className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500">3870 Reviews</p>
                 </div>
               </div>
 
               <form className="mt-10">
-                {/* Sizes */}
+                {/* Enhanced Sizes with animations */}
                 <div className="mt-10">
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-medium text-gray-900">Size</h3>
+                    {selectedSize && (
+                      <span className="text-sm text-indigo-600 font-medium animate-fade-in">
+                        Selected: {selectedSize.name}
+                      </span>
+                    )}
                   </div>
 
                   <fieldset aria-label="Choose a size" className="mt-4">
                     <RadioGroup
                       value={selectedSize}
-                      onChange={setSelectedSize}
+                      onChange={handleSizeChange}
                       className="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4"
                     >
-                      {product.sizes.map((size) => (
+                      {products.product?.sizes.map((size) => (
                         <Radio
                           key={size.name}
                           value={size}
-                          disabled={!size.inStock}
-                          className={classNames(
-                            size.inStock
-                              ? "cursor-pointer bg-white text-gray-900 shadow-sm"
-                              : "cursor-not-allowed bg-gray-50 text-gray-200",
-                            "group relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none data-[focus]:ring-2 data-[focus]:ring-indigo-500 sm:flex-1 sm:py-6"
-                          )}
+                          disabled={size.quantity === 0}
+                          className={({ checked, disabled }) =>
+                            classNames(
+                              // Base styles
+                              "group relative flex items-center justify-center rounded-lg border px-4 py-3 text-sm font-medium uppercase focus:outline-none transition-all duration-300 ease-in-out transform",
+                              // Available vs disabled states
+                              !disabled
+                                ? "cursor-pointer bg-white text-gray-900 shadow-sm border-gray-300"
+                                : "cursor-not-allowed bg-gray-50 text-gray-200 border-gray-200",
+                              // Hover effects for available sizes
+                              !disabled && "hover:bg-gray-50 hover:border-gray-400 hover:scale-105 hover:shadow-md",
+                              // Selected state
+                              checked &&
+                                !disabled &&
+                                "bg-indigo-50 border-indigo-500 text-indigo-700 ring-2 ring-indigo-500 ring-offset-2 scale-105 shadow-lg",
+                              // Animation when selecting
+                              checked && isAnimating && "animate-pulse",
+                              // Focus state
+                              "focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",
+                            )
+                          }
                         >
-                          <span>{size.name}</span>
-                          {size.inStock ? (
-                            <span
-                              aria-hidden="true"
-                              className="pointer-events-none absolute -inset-px rounded-md border-2 border-transparent group-data-[focus]:border group-data-[checked]:border-indigo-500"
-                            />
-                          ) : (
-                            <span
-                              aria-hidden="true"
-                              className="pointer-events-none absolute -inset-px rounded-md border-2 border-gray-200"
-                            >
-                              <svg
-                                stroke="currentColor"
-                                viewBox="0 0 100 100"
-                                preserveAspectRatio="none"
-                                className="absolute inset-0 size-full stroke-2 text-gray-200"
+                          {({ checked }) => (
+                            <>
+                              <span
+                                className={classNames(
+                                  "transition-all duration-200",
+                                  checked ? "font-bold" : "font-medium",
+                                )}
                               >
-                                <line
-                                  x1={0}
-                                  x2={100}
-                                  y1={100}
-                                  y2={0}
-                                  vectorEffect="non-scaling-stroke"
-                                />
-                              </svg>
-                            </span>
+                                {size.name}
+                              </span>
+                              {size.quantity === 0 && (
+                                <span className="text-xs text-red-500 ml-2 animate-fade-in">(Out of stock)</span>
+                              )}
+                              {/* Selected indicator */}
+                              {checked && (
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-indigo-500 rounded-full animate-bounce">
+                                  <div className="w-full h-full bg-white rounded-full scale-50"></div>
+                                </div>
+                              )}
+                            </>
                           )}
                         </Radio>
                       ))}
@@ -258,18 +266,24 @@ export default function ProductDetails() {
                 <Button
                   onClick={handleAddToCart}
                   variant="contained"
+                  className={classNames(
+                    "transition-all duration-300 ease-in-out transform",
+                    selectedSize ? "hover:scale-105 hover:shadow-lg" : "opacity-75",
+                  )}
                   sx={{
                     px: "2.5rem",
                     py: "1rem",
                     bgcolor: "#9155fd",
                     marginTop: "1rem",
+                    "&:hover": {
+                      bgcolor: "#7c3aed",
+                    },
                   }}
                 >
                   Add to Cart
                 </Button>
-                {error && (
-                  <div style={{ color: "red", marginTop: "8px" }}>{error}</div>
-                )}
+
+                {error && <div className="text-red-500 mt-2 animate-fade-in">{error}</div>}
               </form>
             </div>
 
@@ -277,19 +291,13 @@ export default function ProductDetails() {
               {/* Description and details */}
               <div>
                 <h3 className="sr-only">Description</h3>
-
                 <div className="space-y-6">
-                  <p className="text-base text-gray-900">
-                    {products?.product?.description}
-                  </p>
+                  <p className="text-base text-gray-900">{products?.product?.description}</p>
                 </div>
               </div>
 
               <div className="mt-10">
-                <h3 className="text-sm font-medium text-gray-900">
-                  Highlights
-                </h3>
-
+                <h3 className="text-sm font-medium text-gray-900">Highlights</h3>
                 <div className="mt-4">
                   <ul role="list" className="list-disc space-y-2 pl-4 text-sm">
                     {product.highlights.map((highlight) => (
@@ -303,7 +311,6 @@ export default function ProductDetails() {
 
               <div className="mt-10">
                 <h2 className="text-sm font-medium text-gray-900">Details</h2>
-
                 <div className="mt-4 space-y-6">
                   <p className="text-sm text-gray-600">{product.details}</p>
                 </div>
@@ -314,27 +321,22 @@ export default function ProductDetails() {
 
         {/* rating and reviews */}
         <section>
-          <h1 className="font-semibold text-lg pb-4">
-            Recent Reviews & Rating
-          </h1>
+          <h1 className="font-semibold text-lg pb-4">Recent Reviews & Rating</h1>
           <div className="border p-5">
             <Grid container spacing={7}>
               <Grid item xs={7}>
                 <div className="space-y-5">
-                  {[1, 1, 1].map((item) => (
-                    <ProductReviewCard />
+                  {[1, 1, 1].map((item, index) => (
+                    <ProductReviewCard key={index} />
                   ))}
                 </div>
               </Grid>
-
               <Grid item xs={5}>
                 <h1 className="text-xl font-semibold pb-2">Product Ratings</h1>
-
                 <div className="flex items-center space-x-3">
                   <Rating value={4.6} precision={0.5} readOnly />
                   <p className="opacity-60">544456 Ratings</p>
                 </div>
-
                 <Box className="mt-5 space-y-3">
                   <Grid container alignItems={"center"} gap={2}>
                     <Grid item xs={2}>
@@ -349,7 +351,6 @@ export default function ProductDetails() {
                       />
                     </Grid>
                   </Grid>
-
                   <Grid container alignItems={"center"} gap={2}>
                     <Grid item xs={2}>
                       <p>Very Good</p>
@@ -363,7 +364,6 @@ export default function ProductDetails() {
                       />
                     </Grid>
                   </Grid>
-
                   <Grid container alignItems={"center"} gap={2}>
                     <Grid item xs={2}>
                       <p>Good</p>
@@ -377,7 +377,6 @@ export default function ProductDetails() {
                       />
                     </Grid>
                   </Grid>
-
                   <Grid container alignItems={"center"} gap={2}>
                     <Grid item xs={2}>
                       <p>Average</p>
@@ -391,7 +390,6 @@ export default function ProductDetails() {
                       />
                     </Grid>
                   </Grid>
-
                   <Grid container alignItems={"center"} gap={2}>
                     <Grid item xs={2}>
                       <p>Poor</p>
@@ -415,12 +413,29 @@ export default function ProductDetails() {
         <section className="pt-10">
           <h1 className="py-5 text-xl font-bold">Similar Products</h1>
           <div className="flex flex-wrap space-x-5">
-            {mens_vest.map((item) => (
-              <HomeSectionCard product={item} />
+            {mens_vest.map((item, index) => (
+              <HomeSectionCard key={index} product={item} />
             ))}
           </div>
         </section>
       </div>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 0.3s ease-out;
+        }
+      `}</style>
     </div>
-  );
+  )
 }

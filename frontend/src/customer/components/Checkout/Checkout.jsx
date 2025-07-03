@@ -15,7 +15,7 @@ export default function Checkout() {
   const [activeStep, setActiveStep] = React.useState(0);
   const location = useLocation();
   const querySearch = new URLSearchParams(location.search);
-  const step = querySearch.get("step");
+  const step = Number(querySearch.get("step")) || 0;
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);

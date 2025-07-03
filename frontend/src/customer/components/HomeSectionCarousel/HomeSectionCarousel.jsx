@@ -23,8 +23,8 @@ const HomeSectionCarousel = ({data, sectionName}) => {
   };
 
   const itemsCount = data.length;
-  const itemsPerView = Math.min(itemsCount, 5.5); // hoặc lấy từ responsive config
-
+  const itemsPerView = Math.min(itemsCount, 5.5); // Lấy số phần tử hiển thị mỗi lần
+  const maxIndex = Math.ceil(itemsCount - itemsPerView); // Tính chỉ số slide cuối cùng
   const showNav = itemsCount > itemsPerView;
 
   const items = data
@@ -43,7 +43,7 @@ const HomeSectionCarousel = ({data, sectionName}) => {
           onSlideChanged={syncActiveIndex}
           activeIndex={activeIndex}
         />
-        {showNav && activeIndex !== items.length - 1 && (
+        {showNav && activeIndex < maxIndex && (
           <Button
             variant="contained"
             className="z-50 bg-white"
@@ -63,7 +63,7 @@ const HomeSectionCarousel = ({data, sectionName}) => {
           </Button>
         )}
 
-        {showNav && activeIndex !== 0 && <Button
+        {showNav && activeIndex > 0 && <Button
           variant="contained"
           className="z-50 bg-white"
           onClick={slidePrev}

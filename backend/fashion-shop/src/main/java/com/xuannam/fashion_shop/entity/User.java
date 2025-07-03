@@ -30,7 +30,6 @@ public class User {
     String mobile;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     List<Address> addresses = new ArrayList<>();
-    String payment_information;
 
     @Embedded // có thể có hoặc ko
     @ElementCollection // Chỉ ra rằng danh sách paymentInformations là danh sách các giá trị nhúng (embedded), chứ không phải là entity độc lập.

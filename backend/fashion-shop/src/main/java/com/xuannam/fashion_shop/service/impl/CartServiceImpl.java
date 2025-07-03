@@ -16,6 +16,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 
@@ -84,5 +85,11 @@ public class CartServiceImpl implements CartService {
         cart.setDiscount(totalPrice - totalDiscountedPrice);
 
         return cartRepository.save(cart);
+    }
+
+    @Transactional
+    @Override
+    public void clearCart(Long userId) {
+        cartRepository.deleteByUser_Id(userId);
     }
 }

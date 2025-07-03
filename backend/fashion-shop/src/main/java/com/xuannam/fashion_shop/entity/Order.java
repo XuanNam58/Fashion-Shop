@@ -21,9 +21,6 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
-    @Column(name = "order_id")
-    String orderId;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;
@@ -33,8 +30,10 @@ public class Order {
 
     LocalDateTime orderDate;
     LocalDateTime deliveryDate;
+    LocalDateTime expireAt;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "shipping_address_id")
     Address shippingAddress;
 
     @Embedded

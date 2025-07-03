@@ -1,7 +1,6 @@
-import { Box, Modal, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import { Box, Modal } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import RegisterForm from "./RegisterForm";
-import { useLocation, useNavigate } from "react-router-dom";
 import LoginForm from "./LoginForm";
 import { useSelector } from "react-redux";
 
@@ -17,30 +16,40 @@ const style = {
   p: 4,
 };
 
-const AuthModal = ({ handleClose, open }) => {
-  const location = useLocation();
-  const navigate = useNavigate();
+const AuthModal = ({ handleClose, open, initialMode = "login" }) => {
+  const [mode, setMode] = useState(initialMode); // "login" hoặc "register"
   const { jwt, isLoading } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (jwt && !isLoading) {
-      handleClose(); // Đóng modal khi đăng nhập/thành công
-      navigate("/"); // Chuyển hướng về trang chính
+      handleClose(); // Đóng modal khi đăng nhập thành công
     }
-  }, [jwt, isLoading, handleClose, navigate]);
+  }, [jwt, isLoading, handleClose]);
+
+  // Khi modal mở lại, reset về initialMode
+  useEffect(() => {
+    if (open) setMode(initialMode);
+  }, [open, initialMode]);
+
   return (
-    <div>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          {location.pathname === "/login" ? <LoginForm /> : <RegisterForm />}
-        </Box>
-      </Modal>
-    </div>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={style}>
+        {mode === "login" ? (
+          <LoginForm
+            onSwitchToRegister={() => setMode("register")}
+          />
+        ) : (
+          <RegisterForm
+            onSwitchToLogin={() => setMode("login")}
+          />
+        )}
+      </Box>
+    </Modal>
   );
 };
 

@@ -22,3 +22,11 @@ server:
 
 jwt:
   secret: Qqt/ie/wY52lPujgC5CN5GY+5rhplntrVRAGxge01rEC7OIv9jhqbhbmSi2pWpnoxhzRibH3At9ZOtnXyIsHnvexOTq6CKPDZbfyP3HVFMc=
+
+ngrok-url: https://4a73-116-111-185-194.ngrok-free.app
+vnpay:
+  pay-url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+  return-url: http://localhost:5454/api/payment/vnpay-callback
+  tmn-code: "2FVUEZLT"
+  secret-key: "Y4UO6Z9XMLH7II6RJXBXG6MYBKPH12Z6"
+  api-url: "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction"
