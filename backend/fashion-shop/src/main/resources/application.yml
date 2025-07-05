@@ -19,7 +19,7 @@ spring:
     password: ${REDISPASSWORD:}
 
 server:
-  port: 5454
+  port: ${PORT:5454}
 
 jwt:
   secret: Qqt/ie/wY52lPujgC5CN5GY+5rhplntrVRAGxge01rEC7OIv9jhqbhbmSi2pWpnoxhzRibH3At9ZOtnXyIsHnvexOTq6CKPDZbfyP3HVFMc=
