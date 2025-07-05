@@ -1,16 +1,21 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Radio, RadioGroup } from "@headlessui/react"
-import { Box, Button, Grid, LinearProgress, Rating } from "@mui/material"
-import ProductReviewCard from "./ProductReviewCard"
-import { mens_vest } from "../../../Data/mens_vest"
-import HomeSectionCard from "../HomeSectionCard/HomeSectionCard.jsx"
-import { useNavigate, useParams } from "react-router-dom"
-import { useDispatch, useSelector } from "react-redux"
-import { findProductById } from "../../../State/Product/Action.js"
-import { addItemToCart } from "../../../State/Cart/Action.js"
-import { toast } from "react-toastify"
+import { useEffect, useState } from "react";
+import { Radio, RadioGroup } from "@headlessui/react";
+import { Box, Button, Grid, LinearProgress, Rating } from "@mui/material";
+import ProductReviewCard from "./ProductReviewCard";
+import { mens_vest } from "../../../Data/mens_vest";
+import HomeSectionCard from "../HomeSectionCard/HomeSectionCard.jsx";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { findProductById } from "../../../State/Product/Action.js";
+import { addItemToCart } from "../../../State/Cart/Action.js";
+import { toast } from "react-toastify";
+import {
+  getAverageRating,
+  getProductRatings,
+} from "../../../State/Rating/Action";
+import { getProductReviews } from "../../../State/Review/Actions.js";
 
 const product = {
   name: "Basic Tee 6-Pack",
@@ -59,64 +64,90 @@ const product = {
   ],
   details:
     'The 6-Pack includes two black, two white, and two heather gray Basic Tees. Sign up for our subscription service and be the first to get new, exciting colors, like our upcoming "Charcoal Gray" limited release.',
-}
-
-const reviews = { href: "#", average: 4, totalCount: 117 }
+};
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(" ")
+  return classes.filter(Boolean).join(" ");
 }
 
 export default function ProductDetails() {
-  const [selectedSize, setSelectedSize] = useState("")
-  const [isAnimating, setIsAnimating] = useState(false)
-  const navigate = useNavigate()
-  const params = useParams()
-  const dispatch = useDispatch()
-  const { products } = useSelector((store) => store)
-  const [error, setError] = useState("")
-  const user = useSelector((store) => store.auth.user)
+  const [selectedSize, setSelectedSize] = useState("");
+  const [isAnimating, setIsAnimating] = useState(false);
+  const navigate = useNavigate();
+  const params = useParams();
+  const dispatch = useDispatch();
+  const { products } = useSelector((store) => store);
+  const reviews = useSelector((store) => store.review);
+  const ratings = useSelector((store) => store.rating);
+  const [error, setError] = useState("");
+  const user = useSelector((store) => store.auth.user);
+
+  // Đảm bảo reviews.reviews là mảng
+  // const reviewList = Array.isArray(reviews.reviews) ? reviews.reviews : [];
+
 
   const handleSizeChange = (size) => {
-    setIsAnimating(true)
-    setSelectedSize(size)
+    setIsAnimating(true);
+    setSelectedSize(size);
 
     // Reset animation after a short delay
     setTimeout(() => {
-      setIsAnimating(false)
-    }, 200)
-  }
+      setIsAnimating(false);
+    }, 200);
+  };
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      toast.error("Please select a size")
-      return
+      toast.error("Please select a size");
+      return;
     }
 
     if (!user) {
-      toast.error("Please login to add product to cart")
-      return
+      toast.error("Please login to add product to cart");
+      return;
     }
 
-    const data = { productId: params.productId, size: selectedSize.name }
-    dispatch(addItemToCart(data))
-    toast.success("Added product successfully")
-    navigate("/cart")
-  }
+    const data = { productId: params.productId, size: selectedSize.name };
+    dispatch(addItemToCart(data));
+    toast.success("Added product successfully");
+    // navigate("/cart")
+  };
 
   useEffect(() => {
-    dispatch(findProductById({ productId: params.productId }))
-  }, [params.productId])
+    dispatch(findProductById({ productId: params.productId }));
+    dispatch(getAverageRating(params.productId));
+    dispatch(getProductReviews({ productId: params.productId }));
+    dispatch(getProductRatings({ productId: params.productId }));
+  }, [params.productId]);
+
+  // Combine reviews and ratings
+  const combinedReviews = reviews?.reviews.map((review) => ({
+    ...review,
+    rating:
+      (Array.isArray(ratings.ratings)
+        ? ratings.ratings
+        : []
+      ).find(
+        (r) =>
+          r.user.id === review.user.id && r.productId === review.productId
+      )?.rating || 0,
+  }));
 
   return (
     <div className="bg-white lg:px-20">
       <div className="pt-6">
         <nav aria-label="Breadcrumb">
-          <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+          <ol
+            role="list"
+            className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8"
+          >
             {product.breadcrumbs.map((breadcrumb) => (
               <li key={breadcrumb.id}>
                 <div className="flex items-center">
-                  <a href={breadcrumb.href} className="mr-2 text-sm font-medium text-gray-900">
+                  <a
+                    href={breadcrumb.href}
+                    className="mr-2 text-sm font-medium text-gray-900"
+                  >
                     {breadcrumb.name}
                   </a>
                   <svg
@@ -133,7 +164,11 @@ export default function ProductDetails() {
               </li>
             ))}
             <li className="text-sm">
-              <a href={product.href} aria-current="page" className="font-medium text-gray-500 hover:text-gray-600">
+              <a
+                href={product.href}
+                aria-current="page"
+                className="font-medium text-gray-500 hover:text-gray-600"
+              >
                 {products.product?.title}
               </a>
             </li>
@@ -169,8 +204,12 @@ export default function ProductDetails() {
           {/* Product info */}
           <div className="lg:col-span-1 maxt-auto max-w-2xl px-4 pb-16 sm:px-6 lg:max-w-7xl lg:px-8 lg:pb-24">
             <div className="lg:col-span-2">
-              <h1 className="text-lg lg:text-xl font-semibold text-gray-900">{products.product?.brand}</h1>
-              <h1 className="text-lg lg:text-xl text-gray-900 opacity-60 pt-1">{products.product?.title}</h1>
+              <h1 className="text-lg lg:text-xl font-semibold text-gray-900">
+                {products.product?.brand}
+              </h1>
+              <h1 className="text-lg lg:text-xl text-gray-900 opacity-60 pt-1">
+                {products.product?.title}
+              </h1>
             </div>
 
             {/* Options */}
@@ -178,17 +217,25 @@ export default function ProductDetails() {
               <h2 className="sr-only">Product information</h2>
 
               <div className="flex space-x-5 items-center text-lg lg:text-xl text-gray-900 mt-6">
-                <p className="font-semibold">{products.product?.discountedPrice}</p>
-                <p className="opacity-50 line-through">{products.product?.price}</p>
-                <p className="text-green-600 font-semibold">{products.product?.discountPercent}% off</p>
+                <p className="font-semibold">
+                  {products.product?.discountedPrice}
+                </p>
+                <p className="opacity-50 line-through">
+                  {products.product?.price}
+                </p>
+                <p className="text-green-600 font-semibold">
+                  {products.product?.discountPercent}% off
+                </p>
               </div>
 
               {/* Reviews */}
               <div className="mt-6">
                 <div className="flex items-center space-x-3">
-                  <Rating name="read-only" value={5.5} readOnly />
-                  <p className="opacity-50 text-sm">56540 Ratings</p>
-                  <p className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500">3870 Reviews</p>
+                  <Rating name="read-only" value={ratings.averageRating} precision={0.5} readOnly />
+                  <p className="opacity-50 text-sm">{ratings.totalRatings || 0} Ratings</p>
+                  <p className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                    {reviews.reviews.length} Reviews
+                  </p>
                 </div>
               </div>
 
@@ -224,7 +271,8 @@ export default function ProductDetails() {
                                 ? "cursor-pointer bg-white text-gray-900 shadow-sm border-gray-300"
                                 : "cursor-not-allowed bg-gray-50 text-gray-200 border-gray-200",
                               // Hover effects for available sizes
-                              !disabled && "hover:bg-gray-50 hover:border-gray-400 hover:scale-105 hover:shadow-md",
+                              !disabled &&
+                                "hover:bg-gray-50 hover:border-gray-400 hover:scale-105 hover:shadow-md",
                               // Selected state
                               checked &&
                                 !disabled &&
@@ -232,7 +280,7 @@ export default function ProductDetails() {
                               // Animation when selecting
                               checked && isAnimating && "animate-pulse",
                               // Focus state
-                              "focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",
+                              "focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             )
                           }
                         >
@@ -241,13 +289,15 @@ export default function ProductDetails() {
                               <span
                                 className={classNames(
                                   "transition-all duration-200",
-                                  checked ? "font-bold" : "font-medium",
+                                  checked ? "font-bold" : "font-medium"
                                 )}
                               >
                                 {size.name}
                               </span>
                               {size.quantity === 0 && (
-                                <span className="text-xs text-red-500 ml-2 animate-fade-in">(Out of stock)</span>
+                                <span className="text-xs text-red-500 ml-2 animate-fade-in">
+                                  (Out of stock)
+                                </span>
                               )}
                               {/* Selected indicator */}
                               {checked && (
@@ -268,7 +318,9 @@ export default function ProductDetails() {
                   variant="contained"
                   className={classNames(
                     "transition-all duration-300 ease-in-out transform",
-                    selectedSize ? "hover:scale-105 hover:shadow-lg" : "opacity-75",
+                    selectedSize
+                      ? "hover:scale-105 hover:shadow-lg"
+                      : "opacity-75"
                   )}
                   sx={{
                     px: "2.5rem",
@@ -283,7 +335,11 @@ export default function ProductDetails() {
                   Add to Cart
                 </Button>
 
-                {error && <div className="text-red-500 mt-2 animate-fade-in">{error}</div>}
+                {error && (
+                  <div className="text-red-500 mt-2 animate-fade-in">
+                    {error}
+                  </div>
+                )}
               </form>
             </div>
 
@@ -292,12 +348,16 @@ export default function ProductDetails() {
               <div>
                 <h3 className="sr-only">Description</h3>
                 <div className="space-y-6">
-                  <p className="text-base text-gray-900">{products?.product?.description}</p>
+                  <p className="text-base text-gray-900">
+                    {products?.product?.description}
+                  </p>
                 </div>
               </div>
 
               <div className="mt-10">
-                <h3 className="text-sm font-medium text-gray-900">Highlights</h3>
+                <h3 className="text-sm font-medium text-gray-900">
+                  Highlights
+                </h3>
                 <div className="mt-4">
                   <ul role="list" className="list-disc space-y-2 pl-4 text-sm">
                     {product.highlights.map((highlight) => (
@@ -321,21 +381,33 @@ export default function ProductDetails() {
 
         {/* rating and reviews */}
         <section>
-          <h1 className="font-semibold text-lg pb-4">Recent Reviews & Rating</h1>
+          <h1 className="font-semibold text-lg pb-4">
+            Recent Reviews & Rating
+          </h1>
           <div className="border p-5">
             <Grid container spacing={7}>
               <Grid item xs={7}>
                 <div className="space-y-5">
-                  {[1, 1, 1].map((item, index) => (
-                    <ProductReviewCard key={index} />
-                  ))}
+                  {combinedReviews.length > 0 ? (
+                    combinedReviews.map((review, index) => (
+                      <ProductReviewCard key={index} review={review} />
+                    ))
+                  ) : (
+                    <p>No reviews yet.</p>
+                  )}
                 </div>
               </Grid>
               <Grid item xs={5}>
                 <h1 className="text-xl font-semibold pb-2">Product Ratings</h1>
                 <div className="flex items-center space-x-3">
-                  <Rating value={4.6} precision={0.5} readOnly />
-                  <p className="opacity-60">544456 Ratings</p>
+                  <Rating
+                    value={ratings.averageRating || 0}
+                    precision={0.5}
+                    readOnly
+                  />
+                  <p className="opacity-60">
+                    {ratings.totalRatings || 0} Ratings
+                  </p>
                 </div>
                 <Box className="mt-5 space-y-3">
                   <Grid container alignItems={"center"} gap={2}>
@@ -437,5 +509,5 @@ export default function ProductDetails() {
         }
       `}</style>
     </div>
-  )
+  );
 }

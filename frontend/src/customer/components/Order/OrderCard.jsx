@@ -2,11 +2,19 @@ import { Grid } from "@mui/material";
 import React from "react";
 import AdjustIcon from "@mui/icons-material/Adjust";
 import { useNavigate } from "react-router-dom";
-const OrderCard = () => {
+import { formatDate } from "../../../util/util";
+import { getOrderById } from "../../../State/Order/Action";
+import { useDispatch } from "react-redux";
+const OrderCard = ({ order }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const handleClickOrderItem = () => {
+    dispatch(getOrderById(order.id));
+    navigate(`/account/order/${order.id}`);
+  };
   return (
     <div
-      onClick={() => navigate(`/account/order/${5}`)}
+      onClick={handleClickOrderItem}
       className="p-5 shadow-md shadow-black hover:shadow-2xl border"
     >
       <Grid container spacing={2} sx={{ justifyContent: "space-between" }}>
@@ -18,34 +26,38 @@ const OrderCard = () => {
               alt=""
             />
             <div className="ml-5 space-y-2">
-              <p className="">Men Slim Jogger</p>
-              <p className="opacity-50 text-xs font-semibold">Size: M</p>
-              <p className="opacity-50 text-xs font-semibold">Color: Black</p>
+              <p className="">{formatDate(order.createdAt)}</p>
+              <p className="opacity-50 text-xs font-semibold">
+                Total Price: {order.totalDiscountedPrice}
+              </p>
+              <p className="opacity-50 text-xs font-semibold">
+                Total Item: {order.totalItem}
+              </p>
             </div>
           </div>
         </Grid>
 
         <Grid item xs={2}>
-          <p>1099</p>
+          <p>{order.orderStatus}</p>
         </Grid>
 
         <Grid item xs={4}>
-          {true && (
+          {order.deliveryDate && (
             <div>
               <p>
                 <AdjustIcon
                   sx={{ width: "15px", height: "15px" }}
                   className="text-green-600 mr-2 text-sm"
                 />
-                <span>Delivered On March 03</span>
+                <span>Delivered On {formatDate(order.deliveryDate)}</span>
               </p>
               <p className="text-xs">Your Item Has Been Delivered</p>
             </div>
           )}
 
-          {false && (
+          {!order.deliveryDate && (
             <p>
-              <span>Expected Delivered On March 03</span>
+              <span>Expected Delivered On </span>
             </p>
           )}
         </Grid>

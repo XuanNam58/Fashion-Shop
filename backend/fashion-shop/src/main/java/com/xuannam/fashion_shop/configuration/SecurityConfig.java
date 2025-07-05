@@ -27,7 +27,7 @@ import java.util.Collections;
 public class SecurityConfig {
     String[] PUBLIC_ENDPOINTS = {"/auth/signin", "/auth/signup", "/auth/refresh-token", "/auth/logout"
             , "/api/products", "/api/get-products-by-category", "/api/products/id/**", "/api/products/suggestions/**", "/api/products/search/**",
-            "/api/payment/vnpay-callback"};
+            "/api/payment/vnpay-callback", "/swagger-ui/**", "/v3/api-docs/**", "/api-docs/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtValidator jwtValidator) throws Exception {

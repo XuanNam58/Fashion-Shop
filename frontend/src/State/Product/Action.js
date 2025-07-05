@@ -53,7 +53,7 @@ export const findProductById = (reqData) => async (dispatch) => {
 };
 
 export const findProductsByCategory = () => async (dispatch) => {
-  const categories = ["vest", "shoes", "shirt"];
+  const categories = ["vest", "shoes", "shirt", "dress", "jeans"];
   const results = await Promise.all(
     categories.map((cat) =>
       api.get(`/api/get-products-by-category?category=${cat}`).then(res => ({ [cat]: res.data }))

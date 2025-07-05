@@ -5,6 +5,8 @@ import com.xuannam.fashion_shop.dto.resquest.CreateProductRequest;
 import com.xuannam.fashion_shop.entity.Product;
 import com.xuannam.fashion_shop.exception.ProductException;
 import com.xuannam.fashion_shop.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,10 +20,12 @@ import java.util.List;
 @RequestMapping("/api/admin/products")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@Tag(name = "Admin Product Controller")
 public class AdminProductController {
     ProductService productService;
 
     @PostMapping("/")
+    @Operation(summary = "Create product")
     public ResponseEntity<Product> createProduct(@RequestBody CreateProductRequest request) {
         Product product = productService.createProduct(request);
         return new ResponseEntity<>(product, HttpStatus.CREATED);
@@ -35,6 +39,7 @@ public class AdminProductController {
     }
 
     @GetMapping("/all")
+    @Operation(summary = "Get all products")
     public ResponseEntity<List<Product>> findAllProduct() {
         List<Product> products = productService.findAllProducts();
         return new ResponseEntity<>(products, HttpStatus.OK);
@@ -47,6 +52,7 @@ public class AdminProductController {
     }
 
     @PostMapping("/creates")
+    @Operation(summary = "Create products")
     public ResponseEntity<ApiResponse> createMultipleProducts(@RequestBody CreateProductRequest[] requests) {
         for (CreateProductRequest request : requests) {
             productService.createProduct(request);

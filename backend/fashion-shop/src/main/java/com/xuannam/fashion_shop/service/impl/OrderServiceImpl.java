@@ -62,7 +62,6 @@ public class OrderServiceImpl implements OrderService {
                 .discount(cart.getDiscount())
                 .totalItem(cart.getTotalItem())
                 .shippingAddress(shippingAddress)
-                .orderDate(LocalDateTime.now())
                 .orderStatus(OrderStatus.PENDING.name())
                 .paymentDetails(PaymentDetails.builder()
                         .status(PaymentStatus.PENDING.name()).build())

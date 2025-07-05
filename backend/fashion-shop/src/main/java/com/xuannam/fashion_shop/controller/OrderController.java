@@ -7,6 +7,8 @@ import com.xuannam.fashion_shop.exception.OrderException;
 import com.xuannam.fashion_shop.exception.UserException;
 import com.xuannam.fashion_shop.service.OrderService;
 import com.xuannam.fashion_shop.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,11 +22,13 @@ import java.util.List;
 @RequestMapping("/api/orders")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@Tag(name = "Order Controller")
 public class OrderController {
     OrderService orderService;
     UserService userService;
 
     @PostMapping("/")
+    @Operation(summary = "Create order")
     public ResponseEntity<Order> createOrder(@RequestBody Address shippingAddress,
                                              @RequestHeader("Authorization") String jwt) throws UserException {
         User user = userService.findUserProfileByJwt(jwt);
@@ -33,13 +37,15 @@ public class OrderController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<Order>> usersOrderHistory(@RequestHeader("Authorization") String jwt) throws UserException {
+    @Operation(summary = "Get order history")
+    public ResponseEntity<List<Order>> userOrderHistory(@RequestHeader("Authorization") String jwt) throws UserException {
         User user = userService.findUserProfileByJwt(jwt);
         List<Order> orders = orderService.usersOrderHistory(user.getId());
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
     @GetMapping("/{orderId}")
+    @Operation(summary = "Find order by id")
     public ResponseEntity<Order> findOrderById(@PathVariable Long orderId,
                                                @RequestHeader("Authorization") String jwt) throws UserException, OrderException {
         User user = userService.findUserProfileByJwt(jwt);

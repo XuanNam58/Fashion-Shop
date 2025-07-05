@@ -3,6 +3,8 @@ package com.xuannam.fashion_shop.controller;
 import com.xuannam.fashion_shop.entity.Product;
 import com.xuannam.fashion_shop.exception.ProductException;
 import com.xuannam.fashion_shop.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,10 +25,12 @@ import java.util.Map;
 @RequestMapping("/api")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@Tag(name = "Product Controller")
 public class ProductController {
     ProductService productService;
 
     @GetMapping("/products")
+    @Operation(summary = "Find products", description = "used for filter products")
     public ResponseEntity<Page<Product>> findProductsHandler(@RequestParam String category,
                                                              @RequestParam(name = "color", required = false) List<String> colors,
                                                              @RequestParam(name = "size", required = false) List<String> sizes,
@@ -49,6 +53,7 @@ public class ProductController {
     }
 
     @GetMapping("/get-products-by-category")
+    @Operation(summary = "Find products by category")
     public ResponseEntity<?> findProductByCategoryHandler(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) List<String> categories
@@ -68,12 +73,14 @@ public class ProductController {
     }
 
     @GetMapping("/products/id/{productId}")
+    @Operation(summary = "Find product by id")
     public ResponseEntity<Product> findProductByIdHandler(@PathVariable Long productId) throws ProductException {
         Product product = productService.findProductById(productId);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @GetMapping("/products/suggestions")
+    @Operation(summary = "Get product suggestions", description = "Used for search to display item in dropdown")
     public ResponseEntity<List<Product>> getProductSuggestions(
             @RequestParam String q,
             @RequestParam(defaultValue = "5") int limit) {
@@ -82,6 +89,7 @@ public class ProductController {
     }
 
     @GetMapping("/products/search")
+    @Operation(summary = "Search products")
     public ResponseEntity<Page<Product>> searchProducts(
             @RequestParam String q,
             @RequestParam(defaultValue = "0") int page,

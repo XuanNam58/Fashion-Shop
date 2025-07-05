@@ -24,6 +24,8 @@ const initialState = {
     vest: [],
     shoes: [],
     shirt: [],
+    dress: [],
+    jeans: []
     // ...
   },
   // Search suggestions state

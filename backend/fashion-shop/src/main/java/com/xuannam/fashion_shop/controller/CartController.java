@@ -11,6 +11,8 @@ import com.xuannam.fashion_shop.service.CartService;
 import com.xuannam.fashion_shop.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,11 +25,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/cart")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@Tag(name = "Cart Controller")
 public class CartController {
     CartService cartService;
     UserService userService;
 
     @GetMapping("/")
+    @Operation(summary = "Find user cart")
     public ResponseEntity<Cart> findUserCart(@RequestHeader("Authorization") String jwt) throws UserException {
         User user = userService.findUserProfileByJwt(jwt);
         Cart cart = cartService.findUserCart(user.getId());
@@ -35,6 +39,7 @@ public class CartController {
     }
 
     @PutMapping("/add")
+    @Operation(summary = "Add item to cart")
     public ResponseEntity<ApiResponse> addItemToCart(@RequestBody AddItemRequest request,
                                                      @RequestHeader("Authorization") String jwt) throws ProductException, UserException {
         User user = userService.findUserProfileByJwt(jwt);

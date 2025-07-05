@@ -10,4 +10,8 @@ import java.util.List;
 public interface RatingRepository extends JpaRepository<Rating, Long> {
     @Query("SELECT r FROM Rating r WHERE r.product.id = :productId")
     List<Rating> getAllProductRatings(@Param("productId") Long productId);
+    @Query("SELECT AVG(r.rating) FROM Rating r WHERE r.product.id = :productId")
+    Double findAverageRatingByProductId(@Param("productId") Long productId);
+    @Query("SELECT COUNT(r) FROM Rating r WHERE r.product.id = :productId")
+    Long countByProductId(@Param("productId") Long ProductId);
 }

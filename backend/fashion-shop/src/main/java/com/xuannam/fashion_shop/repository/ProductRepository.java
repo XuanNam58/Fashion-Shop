@@ -28,6 +28,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p " +
             "WHERE (LOWER(p.title) LIKE LOWER(CONCAT('%', :q, '%')) " +
             "OR LOWER(p.brand) LIKE LOWER(CONCAT('%', :q, '%')) " +
+            "OR LOWER(p.color) LIKE LOWER(CONCAT('%', :q, '%')) " +
             "OR LOWER(p.category.name) LIKE LOWER(CONCAT('%', :q, '%'))) " +
             "ORDER BY p.numRatings DESC")
     List<Product> getProductSuggestions(@Param("q") String q, Pageable pageable);

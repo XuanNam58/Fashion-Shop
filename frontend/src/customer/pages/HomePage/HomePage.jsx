@@ -17,8 +17,8 @@ const HomePage = () => {
                 <HomeSectionCarousel data={data.vest} sectionName={"Men's Vest"}/>
                 {/* <HomeSectionCarousel data={data.shoes} sectionName={"Men's Shoes"}/> */}
                 <HomeSectionCarousel data={data.shirt} sectionName={"Men's Shirt"}/>
-                <HomeSectionCarousel data={mens_vest} sectionName={"Women's Saree"}/>
-                <HomeSectionCarousel data={mens_vest} sectionName={"Women's Dress"}/>
+                <HomeSectionCarousel data={data.dress} sectionName={"Women's Dress"}/>
+                <HomeSectionCarousel data={data.jeans} sectionName={"Women's Jeans"}/>
             </div>
 
         </div>

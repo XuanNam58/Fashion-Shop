@@ -10,6 +10,8 @@ import com.xuannam.fashion_shop.repository.UserRepository;
 import com.xuannam.fashion_shop.service.RefreshTokenService;
 import com.xuannam.fashion_shop.service.TokenBlacklistService;
 import com.xuannam.fashion_shop.service.impl.CustomerUserServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,11 +36,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/auth")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@Tag(name = "Auth Controller")
 public class AuthController {
     AuthenticationManager authenticationManager;
     UserRepository userRepository;
@@ -49,6 +53,7 @@ public class AuthController {
     TokenBlacklistService tokenBlacklistService;
 
     @PostMapping("/signup")
+    @Operation(summary = "Signup")
     public ResponseEntity<AuthResponse> createUserHandler(@RequestBody User user, HttpServletResponse response) throws UserException {
         String email = user.getEmail();
         String password = user.getPassword();
@@ -65,6 +70,7 @@ public class AuthController {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .role("USER")
+                .createdAt(LocalDateTime.now())
                 .build();
 
         User savedUser = userRepository.save(createdUser);
@@ -92,6 +98,7 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
+    @Operation(summary = "Login")
     public ResponseEntity<AuthResponse> loginUserHandler(@RequestBody LoginRequest loginRequest,
                                                          HttpServletResponse response) throws UserException {
         String email = loginRequest.getEmail();
@@ -128,6 +135,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
+    @Operation(summary = "Refresh token")
     public ResponseEntity<AuthResponse> refreshTokenHandler(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Cookie[] cookies = request.getCookies();
         String refreshToken = null;
@@ -178,6 +186,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "Logout")
     public ResponseEntity<String> logoutHandler(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         String refreshToken = null;
