@@ -14,8 +14,9 @@ spring:
     show-sql: true
 
   redis:
-    host: localhost
-    port: 6379
+    host: ${REDISHOST:localhost}
+    port: ${REDISPORT:6379}
+    password: ${REDISPASSWORD:}
 
 server:
   port: 5454
@@ -26,7 +27,7 @@ jwt:
 ngrok-url: https://4a73-116-111-185-194.ngrok-free.app
 vnpay:
   pay-url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
-  return-url: http://localhost:5454/api/payment/vnpay-callback
+  return-url: ${VNPAY_RETURN_URL:http://localhost:5454/api/payment/vnpay-callback}
   tmn-code: "2FVUEZLT"
   secret-key: "Y4UO6Z9XMLH7II6RJXBXG6MYBKPH12Z6"
   api-url: "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction"
