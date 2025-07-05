@@ -3,9 +3,9 @@ spring:
   name: fashion-shop
 
   datasource:
-    url: jdbc:mysql://localhost:3306/fashion_shop
-    username: root
-    password: root
+    url: jdbc:mysql://${MYSQLHOST:localhost}:${MYSQLPORT:3306}/${MYSQLDATABASE:fashion_shop}
+    username: ${MYSQLUSER:root}
+    password: ${MYSQLPASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
