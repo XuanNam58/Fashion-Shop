@@ -3,15 +3,18 @@ spring:
   name: fashion-shop
 
   datasource:
-    url: jdbc:mysql://${MYSQLHOST:localhost}:${MYSQLPORT:3306}/${MYSQLDATABASE:fashion_shop}
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:fashion_shop}
     username: ${MYSQLUSER:root}
-    password: ${MYSQLPASSWORD:root}
+    password: ${DB_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
 
   redis:
     host: ${REDISHOST:localhost}
