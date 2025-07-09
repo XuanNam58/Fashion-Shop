@@ -4,11 +4,12 @@ import com.xuannam.fashion_shop.entity.Address;
 import com.xuannam.fashion_shop.entity.Order;
 import com.xuannam.fashion_shop.entity.User;
 import com.xuannam.fashion_shop.exception.OrderException;
+import com.xuannam.fashion_shop.exception.ProductException;
 
 import java.util.List;
 
 public interface OrderService {
-    Order createOrder(User user, Address shippingAddress);
+    Order createOrder(User user, Address shippingAddress) throws ProductException;
 
     Order findOrderById(Long orderId) throws OrderException;
 
@@ -20,7 +21,7 @@ public interface OrderService {
 
     Order shippedOrder(Long orderId) throws OrderException;
     Order deliveredOrder(Long orderId) throws OrderException;
-    Order cancelOrder(Long orderId) throws OrderException;
+    Order cancelOrder(Long orderId) throws OrderException, ProductException;
     List<Order> getAllOrders();
     void deleteOrder(Long orderId) throws OrderException;
 

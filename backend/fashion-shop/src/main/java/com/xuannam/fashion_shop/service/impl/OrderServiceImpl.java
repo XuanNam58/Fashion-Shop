@@ -4,12 +4,14 @@ import com.xuannam.fashion_shop.entity.*;
 import com.xuannam.fashion_shop.enums.OrderStatus;
 import com.xuannam.fashion_shop.enums.PaymentStatus;
 import com.xuannam.fashion_shop.exception.OrderException;
+import com.xuannam.fashion_shop.exception.ProductException;
 import com.xuannam.fashion_shop.repository.*;
 import com.xuannam.fashion_shop.service.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,9 +31,10 @@ public class OrderServiceImpl implements OrderService {
     OrderRepository orderRepository;
     OrderItemService orderItemService;
     OrderItemRepository orderItemRepository;
+    ProductRepository productRepository;
 
     @Override
-    public Order createOrder(User user, Address shippingAddress) {
+    public Order createOrder(User user, Address shippingAddress) throws ProductException {
         shippingAddress.setUser(user);
         Address address = addressRepository.save(shippingAddress);
         user.getAddresses().add(address);
@@ -40,7 +43,30 @@ public class OrderServiceImpl implements OrderService {
         Cart cart = cartService.findUserCart(user.getId());
         List<OrderItem> orderItems = new ArrayList<>();
 
+        // Kiểm tra và trừ tồn kho
         for (CartItem item : cart.getCartItems()) {
+            Optional<Product> productOptional = productRepository.findByIdWithLock(item.getProduct().getId());
+            if (productOptional.isEmpty()) {
+                throw new ProductException("Product not found with id " + item.getProduct().getId());
+            }
+            Product product = productOptional.get();
+
+            Optional<Size> sizeOptional = product.getSizes().stream()
+                    .filter(size -> size.getName().equalsIgnoreCase(item.getSize()))
+                    .findFirst();
+            if (sizeOptional.isEmpty()) {
+                throw new ProductException("Size " + item.getSize() + " not available for product " + product.getTitle());
+            }
+            Size size = sizeOptional.get();
+            if (size.getQuantity() < item.getQuantity()) {
+                throw new ProductException("Insufficient stock for size " + item.getSize() + " of " + item.getProduct().getTitle() + ". Available: " + size.getQuantity() + ", Requested: " + item.getQuantity());
+            }
+
+            // Trừ tồn kho
+            size.setQuantity(size.getQuantity() - item.getQuantity());
+            product.setQuantity(product.getQuantity() - item.getQuantity());
+            productService.updateProduct(product.getId(), product);
+
             OrderItem orderItem = OrderItem.builder()
                     .price(item.getPrice())
                     .product(item.getProduct())
@@ -120,9 +146,28 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order cancelOrder(Long orderId) throws OrderException {
+    @Transactional
+    public Order cancelOrder(Long orderId) throws OrderException, ProductException {
         Order order = findOrderById(orderId);
         order.setOrderStatus(OrderStatus.CANCELED.name());
+
+        for (OrderItem item : order.getOrderItems()) {
+            Optional<Product> productOptional = productRepository.findByIdWithLock(item.getProduct().getId());
+            if (productOptional.isEmpty()) {
+                throw new ProductException("Product not found with id " + item.getProduct().getId());
+            }
+            Product product = productOptional.get();
+
+            Optional<Size> sizeOptional = product.getSizes().stream()
+                    .filter(size -> size.getName().equalsIgnoreCase(item.getSize()))
+                    .findFirst();
+            if (sizeOptional.isPresent()) {
+                Size size = sizeOptional.get();
+                size.setQuantity(size.getQuantity() + item.getQuantity());
+            }
+            product.setQuantity(product.getQuantity() + item.getQuantity());
+            productService.updateProduct(product.getId(), product);
+        }
         return orderRepository.save(order);
     }
 

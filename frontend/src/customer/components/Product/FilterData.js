@@ -35,6 +35,7 @@ export const filters = [
       { value: "S", label: "S" },
       { value: "M", label: "M" },
       { value: "L", label: "L" },
+      { value: "XL", label: "XL" },
     ],
   },
 ];
@@ -74,8 +75,8 @@ export const singleFilter = [
     id: "availability",
     name: "Availability",
     options: [
-      { value: "In Stock", label: "In Stock" },
-      { value: "Out Of Stock", label: "Out Of Stock" },
+      { value: "in_stock", label: "In Stock" },
+      { value: "out_of_stock", label: "Out Of Stock" },
     ],
   },
 ];

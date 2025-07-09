@@ -3,6 +3,7 @@ package com.xuannam.fashion_shop.controller;
 import com.xuannam.fashion_shop.dto.response.ApiResponse;
 import com.xuannam.fashion_shop.entity.Order;
 import com.xuannam.fashion_shop.exception.OrderException;
+import com.xuannam.fashion_shop.exception.ProductException;
 import com.xuannam.fashion_shop.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,7 +57,7 @@ public class AdminOrderController {
     @PutMapping("/{orderId}/cancel")
     @Operation(summary = "Cancel order", description = "Update canceled order")
     public ResponseEntity<Order> cancelOrderHandler(@PathVariable Long orderId,
-                                                     @RequestHeader("Authorization") String jwt) throws OrderException {
+                                                     @RequestHeader("Authorization") String jwt) throws OrderException, ProductException {
         Order order = orderService.cancelOrder(orderId);
         return new ResponseEntity<>(order, HttpStatus.OK);
     }

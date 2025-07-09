@@ -125,40 +125,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<Product> getAllProduct(String category, List<String> colors, List<String> sizes, Integer minPrice, Integer maxPrice, Integer minDiscount, String sort, String stock, Integer pageNumber, Integer pageSize) {
+    public Page<Product> getAllProduct(String category, List<String> colors, List<String> sizes, Integer minPrice, Integer maxPrice, Integer minDiscount, String sort, String stock, Integer pageNumber, Integer pageSize) throws ProductException {
+        if (pageNumber < 0 || pageSize <= 0) {
+            throw new ProductException("Invalid pageNumber or pageSize");
+        }
+        List<String> filteredColors = colors != null && !colors.isEmpty() ? colors.stream().map(String::toLowerCase).toList() : null;
+        List<String> filteredSizes = sizes != null && !sizes.isEmpty() ? sizes.stream().map(String::toLowerCase).toList() : null;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        List<Product> products = productRepository.filterProducts(category, minPrice, maxPrice, minDiscount, sort);
-        /*filter sẽ giữ lại các phần tử thỏa mãn điều kiện
-         * anyMatch trả về boolean nếu xuất hiện phần tử thỏa mãn điều kiện*/
-        if (!colors.isEmpty()) {
-            products = products.stream().filter(product ->
-                    colors.stream().anyMatch(c ->
-                            c.equalsIgnoreCase(product.getColor()))).collect(Collectors.toList());
-        }
-
-        if (stock != null) {
-            if (stock.equals("in_stock")) {
-                products = products.stream().filter(product -> product.getQuantity() > 0).collect(Collectors.toList());
-            } else if (stock.equals("out_of_stock")) {
-                products = products.stream().filter(product -> product.getQuantity() < 0).collect(Collectors.toList());
-            }
-        }
-
-        int startIndex = (int) pageable.getOffset();
-        int endIndex = Math.min(startIndex + pageable.getPageSize(), products.size());
-
-        List<Product> pageContent = products.subList(startIndex, endIndex);
-
-        return new PageImpl<>(pageContent, pageable, products.size());
+        return productRepository.filterProducts(category, minPrice, maxPrice, minDiscount, filteredColors, filteredSizes, stock, sort, pageable);
     }
 
     @Override
     public List<Product> getProductSuggestions(String q, int limit) {
         if (q == null || q.trim().isEmpty()) return Collections.emptyList();
         Pageable pageable = PageRequest.of(0, limit);
-        return productRepository.getProductSuggestions(q, pageable).stream()
-                .limit(limit)
-                .toList();
+        return productRepository.getProductSuggestions(q, pageable);
     }
 
     @Override

@@ -22,7 +22,7 @@ public interface ProductService {
     List<Product> findProductByCategory(java.lang.String category);
 
     Page<Product> getAllProduct(java.lang.String category, List<String> colors, List<String> sizes, Integer minPrice, Integer maxPrice,
-                                Integer minDiscount, java.lang.String sort, java.lang.String stock, Integer pageNumber, Integer pageSize);
+                                Integer minDiscount, java.lang.String sort, java.lang.String stock, Integer pageNumber, Integer pageSize) throws ProductException;
     List<Product> getProductSuggestions(String q, int limit);
 
     Page<Product> searchProducts(String q, Pageable pageable);

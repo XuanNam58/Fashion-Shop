@@ -1,10 +1,7 @@
 package com.xuannam.fashion_shop.service.impl;
 
 import com.xuannam.fashion_shop.dto.resquest.VNPayRequest;
-import com.xuannam.fashion_shop.entity.Order;
-import com.xuannam.fashion_shop.entity.OrderItem;
-import com.xuannam.fashion_shop.entity.PaymentDetails;
-import com.xuannam.fashion_shop.entity.Product;
+import com.xuannam.fashion_shop.entity.*;
 import com.xuannam.fashion_shop.enums.OrderStatus;
 import com.xuannam.fashion_shop.enums.PaymentStatus;
 import com.xuannam.fashion_shop.repository.OrderRepository;
@@ -119,6 +116,12 @@ public class VNPayServiceImpl implements VNPayService {
 
                 Order order = orderService.findOrderById(Long.valueOf(vnp_TxnRef));
 
+                // Kiểm tra đơn hàng chưa hết hạn
+                if (order.getExpireAt().isBefore(LocalDateTime.now())) {
+                    orderService.cancelOrder(Long.valueOf(vnp_TxnRef)); // Hủy và khôi phục tồn kho
+                    return false;
+                }
+
                 PaymentDetails paymentDetails = order.getPaymentDetails();
                 paymentDetails.setVnpTransactionNo(fields.get("vnp_TransactionNo"));
                 paymentDetails.setVnpResponseCode(fields.get("vnp_ResponseCode"));
@@ -128,13 +131,10 @@ public class VNPayServiceImpl implements VNPayService {
                 if ("00".equals(fields.get("vnp_ResponseCode"))) {
                     order.setOrderStatus(OrderStatus.PLACED.name());
                     paymentDetails.setStatus(PaymentStatus.COMPLETED.name());
-
-                    for (OrderItem orderItem : order.getOrderItems()) {
-                        Product product = orderItem.getProduct();
-                        product.setQuantity(product.getQuantity() - orderItem.getQuantity());
-                        productService.updateProduct(product.getId(), product);
-                    }
                     cartService.clearCart(order.getUser().getId());
+                } else {
+                    // Thanh toán thất bại, hủy đơn và khôi phục tồn kho
+                    orderService.cancelOrder(Long.valueOf(vnp_TxnRef));
                 }
                 orderRepository.save(order);
                 return "00".equals(fields.get("vnp_ResponseCode"));

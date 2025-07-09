@@ -1,13 +1,12 @@
 package com.xuannam.fashion_shop.service.impl;
 
 import com.xuannam.fashion_shop.dto.resquest.AddItemRequest;
-import com.xuannam.fashion_shop.entity.Cart;
-import com.xuannam.fashion_shop.entity.CartItem;
-import com.xuannam.fashion_shop.entity.Product;
-import com.xuannam.fashion_shop.entity.User;
+import com.xuannam.fashion_shop.entity.*;
+import com.xuannam.fashion_shop.exception.CartItemException;
 import com.xuannam.fashion_shop.exception.ProductException;
 import com.xuannam.fashion_shop.exception.UserException;
 import com.xuannam.fashion_shop.repository.CartRepository;
+import com.xuannam.fashion_shop.repository.ProductRepository;
 import com.xuannam.fashion_shop.service.CartItemService;
 import com.xuannam.fashion_shop.service.CartService;
 import com.xuannam.fashion_shop.service.ProductService;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +26,7 @@ import java.util.HashSet;
 public class CartServiceImpl implements CartService {
     CartRepository cartRepository;
     CartItemService cartItemService;
-    ProductService productService;
+    ProductRepository productRepository;
     UserService userService;
 
     @Override
@@ -39,14 +39,31 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public String addCartItem(Long userId, AddItemRequest request) throws ProductException, UserException {
+    public String addCartItem(Long userId, AddItemRequest request) throws ProductException, UserException, CartItemException {
         Cart cart = cartRepository.findByUserId(userId);
 
         if (cart == null) {
             cart = createCart(userService.findUserById(userId));
         }
 
-        Product product = productService.findProductById(request.getProductId());
+        Optional<Product> productOptional = productRepository.findByIdWithLock(request.getProductId());
+        if (productOptional.isEmpty()) {
+            throw new ProductException("Product not found with id " + request.getProductId());
+        }
+        Product product = productOptional.get();
+
+        Optional<Size> sizeOptional = product.getSizes().stream()
+                .filter(size -> size.getName().equalsIgnoreCase(request.getSize()))
+                .findFirst();
+
+        if (sizeOptional.isEmpty()) {
+            throw new ProductException("Size " + request.getSize() + " not available for product " + product.getTitle());
+        }
+        Size size = sizeOptional.get();
+        if (size.getQuantity() < request.getQuantity()) {
+            throw new ProductException("Insufficient stock for size " + request.getSize() + ". Available: " + size.getQuantity() + ", Requested: " + request.getQuantity());
+        }
+
         CartItem isPresent = cartItemService.isCartItemExist(cart, product, request.getSize(), userId);
 
         if (isPresent == null) {
@@ -61,7 +78,17 @@ public class CartServiceImpl implements CartService {
             CartItem createdCartItem = cartItemService.createCartItem(item);
             cart.getCartItems().add(createdCartItem);
         }
-
+        else {
+            // Nếu sản phẩm đã có trong giỏ, kiểm tra tổng số lượng
+            int newQuantity = isPresent.getQuantity() + request.getQuantity();
+            if (size.getQuantity() < newQuantity) {
+                throw new ProductException("Insufficient stock for size " + request.getSize() + ". Available: " + size.getQuantity() + ", Requested: " + newQuantity);
+            }
+            isPresent.setQuantity(newQuantity);
+            isPresent.setPrice(newQuantity * product.getPrice());
+            isPresent.setDiscountedPrice(newQuantity * product.getDiscountedPrice());
+            cartItemService.updateCartItem(userId, isPresent.getId(),isPresent);
+        }
         return "Item Add To Cart";
     }
 

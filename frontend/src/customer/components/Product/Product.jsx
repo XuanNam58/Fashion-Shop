@@ -37,8 +37,8 @@ import { findProducts, searchProducts } from "../../../State/Product/Action";
 import Pagination from "@mui/material/Pagination";
 
 const sortOptions = [
-  { name: "Price: Low to High", value: "price,asc", current: false },
-  { name: "Price: High to Low", value: "price,desc", current: false },
+  { name: "Price: Low to High", value: "price_low,asc", current: false },
+  { name: "Price: High to Low", value: "price_high,desc", current: false },
   { name: "Newest First", value: "createdAt,desc", current: false },
   { name: "Oldest First", value: "createdAt,asc", current: false },
   { name: "Name A-Z", value: "title,asc", current: false },
@@ -183,7 +183,7 @@ export default function Product() {
         maxPrice,
         minDiscount: discount || 0,
         sort: sortValue || "price_low",
-        stock: stock,
+        stock: stock || "in_stock",
         pageNumber: pageNumber - 1,
         pageSize: 10,
       };

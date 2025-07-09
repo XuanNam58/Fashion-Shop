@@ -40,11 +40,11 @@ public class ProductController {
                                                              @RequestParam String sort,
                                                              @RequestParam String stock,
                                                              @RequestParam Integer pageNumber,
-                                                             @RequestParam Integer pageSize) {
+                                                             @RequestParam Integer pageSize) throws ProductException {
 
 
-        colors = colors != null ? colors : Collections.emptyList();
-        sizes = sizes != null ? sizes : Collections.emptyList();
+//        colors = colors != null ? colors : Collections.emptyList();
+//        sizes = sizes != null ? sizes : Collections.emptyList();
 
 
         Page<Product> res = productService.getAllProduct(category, colors, sizes, minPrice, maxPrice,
